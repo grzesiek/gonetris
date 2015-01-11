@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/jessevdk/go-flags"
+	"github.com/nsf/termbox-go"
 	"os"
 	"time"
 )
@@ -20,9 +21,26 @@ func init() {
 
 }
 
+var (
+	Running bool = true
+	Ticker  *time.Ticker
+)
+
 func main() {
 
+	termbox.Init()
+	defer termbox.Close()
+
+	Ticker = time.NewTicker(100 * time.Millisecond)
+
+	go HandleTerminal()
 	go HandleBoard()
-	time.Sleep(time.Duration(8) * time.Second)
+	go HandleKeys()
+
+	for Running {
+		select {
+		case <-Ticker.C:
+		}
+	}
 
 }

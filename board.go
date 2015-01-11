@@ -7,9 +7,6 @@ import (
 
 func HandleBoard() {
 
-	termbox.Init()
-	defer termbox.Close()
-
 	termbox.HideCursor()
 	termbox.Clear(termbox.ColorBlack, termbox.ColorBlack)
 	termbox.SetOutputMode(termbox.OutputNormal)
@@ -20,6 +17,8 @@ func HandleBoard() {
 
 	termbox.Flush()
 
-	time.Sleep(time.Duration(5) * time.Second)
+	for Running {
+		time.Sleep(10 * time.Millisecond)
+	}
 
 }
