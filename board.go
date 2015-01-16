@@ -5,21 +5,39 @@ import (
 	"time"
 )
 
-func HandleBoard() {
+var (
+	PlayerBoard = new(Board)
+)
 
-	termbox.HideCursor()
-	termbox.Clear(termbox.ColorBlack, termbox.ColorBlack)
-	termbox.SetOutputMode(termbox.OutputNormal)
-	termbox.Sync()
+type Board struct {
+	Runes [22][22]rune
+	X     int
+	Y     int
+}
 
-	termbox.SetCell(0, 0, 'a', termbox.ColorRed, termbox.ColorGreen)
-	termbox.SetCell(10, 10, 'b', termbox.ColorRed, termbox.ColorGreen)
+func (b *Board) Draw() {
 
+	for row, runes := range PlayerBoard.Runes {
+		for col, _ := range runes {
+			x, y := PlayerBoard.X+row, PlayerBoard.Y+col
+			termbox.SetCell(x, y, '#', termbox.ColorRed, termbox.ColorGreen)
+		}
+	}
 	termbox.Flush()
+
+}
+
+func init() {
+	PlayerBoard.X = 6
+	PlayerBoard.Y = 4
+}
+
+func HandleBoard() {
 
 	for Running {
 
-		time.Sleep(50 * time.Millisecond)
+		PlayerBoard.Draw()
+		time.Sleep(100 * time.Millisecond)
 	}
 	Wg.Done()
 
