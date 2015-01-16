@@ -2,8 +2,8 @@ package main
 
 import (
 	"github.com/jessevdk/go-flags"
-	"github.com/nsf/termbox-go"
 	"os"
+	"sync"
 )
 
 var opts struct {
@@ -12,7 +12,8 @@ var opts struct {
 }
 
 var (
-	quit chan bool = make(chan bool)
+	Running = true
+	Wg      sync.WaitGroup
 )
 
 func init() {
@@ -26,13 +27,11 @@ func init() {
 
 func main() {
 
-	termbox.Init()
-	defer termbox.Close()
-
 	go HandleTerminal()
 	go HandleBoard()
 	go HandleKeys()
 
-	<-quit
+	Wg.Add(3)
+	Wg.Wait()
 
 }

@@ -17,9 +17,10 @@ func HandleBoard() {
 
 	termbox.Flush()
 
-	for {
+	for Running {
 
-		time.Sleep(10 * time.Millisecond)
+		time.Sleep(50 * time.Millisecond)
 	}
+	Wg.Done()
 
 }
