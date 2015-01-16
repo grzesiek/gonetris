@@ -8,17 +8,18 @@ import (
 
 func HandleKeys() {
 
-	for Running {
+	for {
 
 		if event := termbox.PollEvent(); event.Type == termbox.EventKey {
 
 			switch event.Ch {
 			case 'q': /* Quit */
 				fmt.Println("Closing ...")
-				Running = false
+				quit <- true
 			}
 
 		}
+
 		time.Sleep(10 * time.Millisecond)
 
 	}

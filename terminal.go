@@ -7,9 +7,9 @@ import (
 
 func HandleTerminal() {
 
-	for Running {
+	for {
 
-		time.Sleep(10 * time.Millisecond)
+		time.Sleep(1 * time.Second)
 
 	}
 
