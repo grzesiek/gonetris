@@ -34,11 +34,12 @@ func init() {
 
 func HandleBoard() {
 
+	defer Wg.Done()
+
 	for Running {
 
 		PlayerBoard.Draw()
 		time.Sleep(100 * time.Millisecond)
 	}
-	Wg.Done()
 
 }

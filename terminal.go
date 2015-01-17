@@ -16,11 +16,11 @@ func init() {
 
 func HandleTerminal() {
 
+	defer Wg.Done()
 	defer termbox.Close()
 
 	for Running {
 
 		time.Sleep(100 * time.Millisecond)
 	}
-	Wg.Done()
 }

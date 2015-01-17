@@ -6,6 +6,8 @@ import (
 
 func HandleKeys() {
 
+	defer Wg.Done()
+
 	for Running {
 
 		if event := termbox.PollEvent(); event.Type == termbox.EventKey {
@@ -16,6 +18,5 @@ func HandleKeys() {
 			}
 		}
 	}
-	Wg.Done()
 
 }
