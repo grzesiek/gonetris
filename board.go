@@ -5,10 +5,6 @@ import (
 	"time"
 )
 
-var (
-	PlayerBoard = new(Board)
-)
-
 type Board struct {
 	Runes [22][22]rune
 	X     int
@@ -17,28 +13,24 @@ type Board struct {
 
 func (b *Board) Draw() {
 
-	for row, runes := range PlayerBoard.Runes {
+	for row, runes := range b.Runes {
 		for col, _ := range runes {
-			x, y := PlayerBoard.X+row, PlayerBoard.Y+col
+			x, y := b.X+row, b.Y+col
 			termbox.SetCell(x, y, '#', termbox.ColorRed, termbox.ColorGreen)
 		}
 	}
-	termbox.Flush()
 
 }
 
-func init() {
-	PlayerBoard.X = 6
-	PlayerBoard.Y = 4
-}
-
-func HandleBoard() {
+func HandleBoards() {
 
 	defer Wg.Done()
 
 	for Running {
 
-		PlayerBoard.Draw()
+		for _, player := range Players {
+			player.Board.Draw()
+		}
 		time.Sleep(100 * time.Millisecond)
 	}
 

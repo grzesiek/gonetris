@@ -21,6 +21,7 @@ func HandleTerminal() {
 
 	for Running {
 
+		termbox.Flush()
 		time.Sleep(100 * time.Millisecond)
 	}
 }
