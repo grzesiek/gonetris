@@ -27,11 +27,12 @@ func init() {
 
 func main() {
 
-	Wg.Add(3)
+	Wg.Add(4)
 
 	go HandleTerminal()
 	go HandleBoards()
 	go HandleKeys()
+	go HandleGame()
 
 	Wg.Wait()
 
