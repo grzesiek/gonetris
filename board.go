@@ -5,17 +5,22 @@ import (
 	"time"
 )
 
+type BoardCell struct {
+	Char   termbox.Cell
+	Filled bool
+}
+
 type Board struct {
-	Matrix   [20][20]rune
+	Matrix   [20][20]BoardCell
 	Position Position
 }
 
 func (b *Board) Draw() {
 
 	for row, cells := range b.Matrix {
-		for col, _ := range cells {
+		for col, cell := range cells {
 			x, y := b.Position.X+row, b.Position.Y+col
-			termbox.SetCell(x, y, '#', termbox.ColorRed, termbox.ColorGreen)
+			termbox.SetCell(x, y, cell.Char.Ch, cell.Char.Fg, cell.Char.Bg)
 		}
 	}
 
@@ -45,6 +50,16 @@ func NewBoard(x, y int) *Board {
 	var board Board
 
 	board.Position = Position{X: x, Y: y}
+
+	// TODO this probably can be done better
+	for x, cells := range board.Matrix {
+		for y := range cells {
+			board.Matrix[x][y].Char.Fg = termbox.ColorDefault
+			board.Matrix[x][y].Char.Bg = termbox.ColorBlack
+			board.Matrix[x][y].Filled = false
+		}
+	}
+
 	board.DrawFrame()
 
 	return &board
