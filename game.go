@@ -4,7 +4,12 @@ import (
 	"time"
 )
 
+var (
+	GameTicker *time.Ticker
+)
+
 func init() {
+	GameTicker = time.NewTicker(1 * time.Second)
 }
 
 func HandleGame() {
@@ -13,11 +18,11 @@ func HandleGame() {
 
 	// Add first, default player
 	Players = append(Players, NewPlayer())
+	PrintStatus("Game started ...")
 
-	PrintDebug("debug message")
+	//	for t := range GameTicker.C {
 
-	for Running {
+	//		PrintStatus(fmt.Sprintf("%v", t))
+	//	}
 
-		time.Sleep(100 * time.Millisecond)
-	}
 }
