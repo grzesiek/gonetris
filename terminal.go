@@ -11,6 +11,7 @@ type Position struct {
 }
 
 func init() {
+
 	termbox.Init()
 
 	termbox.HideCursor()
@@ -19,12 +20,11 @@ func init() {
 	termbox.Sync()
 }
 
-func PrintDebug(text string) {
+func PrintStatus(text string) {
 
 	for i, char := range text {
 		termbox.SetCell(2+i, 2, char, termbox.ColorWhite, termbox.ColorRed)
 	}
-
 }
 
 func HandleTerminal() {
