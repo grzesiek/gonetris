@@ -6,16 +6,15 @@ import (
 )
 
 type Board struct {
-	Runes [22][22]rune
-	X     int
-	Y     int
+	Runes    [22][22]rune
+	Position Position
 }
 
 func (b *Board) Draw() {
 
 	for row, runes := range b.Runes {
 		for col, _ := range runes {
-			x, y := b.X+row, b.Y+col
+			x, y := b.Position.X+row, b.Position.Y+col
 			termbox.SetCell(x, y, '#', termbox.ColorRed, termbox.ColorGreen)
 		}
 	}

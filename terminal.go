@@ -5,6 +5,11 @@ import (
 	"time"
 )
 
+type Position struct {
+	X int
+	Y int
+}
+
 func init() {
 	termbox.Init()
 
