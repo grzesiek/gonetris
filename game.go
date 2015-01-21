@@ -5,24 +5,26 @@ import (
 )
 
 var (
-	GameTicker *time.Ticker
+	Paused   = true
+	GameTick = 1000 * time.Millisecond
 )
 
 func init() {
-	GameTicker = time.NewTicker(1 * time.Second)
 }
 
 func HandleGame() {
 
 	defer Wg.Done()
 
-	// Add first, default player
+	/* Add first, default player */
 	Players = append(Players, NewPlayer())
+
 	PrintStatus("Game started ...")
 
-	//	for t := range GameTicker.C {
+	for Running {
 
-	//		PrintStatus(fmt.Sprintf("%v", t))
-	//	}
+		//		BrickNext()
+		time.Sleep(GameTick)
+	}
 
 }
