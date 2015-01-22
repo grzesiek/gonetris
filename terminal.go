@@ -20,10 +20,10 @@ func init() {
 	termbox.Sync()
 }
 
-func PrintStatus(text string) {
+func PrintText(text string, p Position) {
 
 	for i, char := range text {
-		termbox.SetCell(2+i, 2, char, termbox.ColorWhite, termbox.ColorRed)
+		termbox.SetCell(p.X+i, p.Y, char, termbox.ColorWhite, termbox.ColorBlack)
 	}
 }
 

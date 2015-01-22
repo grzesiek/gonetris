@@ -19,7 +19,7 @@ func HandleGame() {
 
 	defer Wg.Done()
 
-	PrintStatus("Game started ...")
+	PrintText("Game started ...", Position{X: 1, Y: 1})
 
 	/* Add first, default player */
 	MyPlayer = NewPlayer()
