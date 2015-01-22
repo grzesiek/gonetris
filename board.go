@@ -17,6 +17,9 @@ type Board struct {
 
 func (b *Board) Draw() {
 
+	CurrentBrick.DrawOnBoard()
+	// zero not filled cells
+
 	for row, cells := range b.Matrix {
 		for col, cell := range cells {
 			x, y := b.Position.X+row, b.Position.Y+col

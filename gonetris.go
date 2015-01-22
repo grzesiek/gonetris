@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/jessevdk/go-flags"
-	"os"
 	"sync"
 )
 
@@ -20,7 +19,7 @@ func init() {
 
 	_, err := flags.Parse(&opts)
 	if err != nil {
-		os.Exit(1)
+		panic("Invalid flags !")
 	}
 
 }

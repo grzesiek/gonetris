@@ -12,19 +12,24 @@ var (
 func init() {
 }
 
+func GameNextStep() {
+}
+
 func HandleGame() {
 
 	defer Wg.Done()
 
-	/* Add first, default player */
-	Players = append(Players, NewPlayer())
-
 	PrintStatus("Game started ...")
+
+	/* Add first, default player */
+	MyPlayer = NewPlayer()
+	Players = append(Players, MyPlayer)
+
+	NextBrick()
 
 	for Running {
 
-		//		BrickNext()
+		GameNextStep()
 		time.Sleep(GameTick)
 	}
-
 }

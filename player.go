@@ -9,7 +9,8 @@ type Player struct {
 }
 
 var (
-	Players []*Player
+	Players  []*Player
+	MyPlayer *Player
 )
 
 func init() {

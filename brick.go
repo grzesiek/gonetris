@@ -2,6 +2,8 @@ package main
 
 import (
 	"github.com/nsf/termbox-go"
+	"math/rand"
+	"time"
 )
 
 type Brick struct {
@@ -44,7 +46,7 @@ func init() {
 			{1, 1}}}
 
 	SBrick := Brick{
-		Color: termbox.ColorGreen,
+		Color: termbox.ColorRed,
 		Layout: [][]int{
 			{0, 1, 1},
 			{1, 1, 0}}}
@@ -56,7 +58,7 @@ func init() {
 			{0, 1, 0}}}
 
 	ZBrick := Brick{
-		Color: termbox.ColorRed,
+		Color: termbox.ColorGreen,
 		Layout: [][]int{
 			{1, 1, 0},
 			{0, 1, 1}}}
@@ -71,7 +73,22 @@ func init() {
 
 }
 
-func (b *Brick) Draw() {
+func (b *Brick) DrawOnBoard() {
+
+	for bx, cells := range b.Layout {
+		for by, cell := range cells {
+			x, y := b.Position.X+(bx*2), b.Position.Y+by
+			if cell == 1 {
+				MyPlayer.Board.Matrix[x][y].Char.Ch = '['
+				MyPlayer.Board.Matrix[x+1][y].Char.Ch = ']'
+				MyPlayer.Board.Matrix[x][y].Char.Bg = b.Color
+				MyPlayer.Board.Matrix[x+1][y].Char.Bg = b.Color
+				MyPlayer.Board.Matrix[x][y].Char.Fg = termbox.ColorBlack
+				MyPlayer.Board.Matrix[x+1][y].Char.Fg = termbox.ColorBlack
+			}
+		}
+	}
+
 }
 
 func (b *Brick) MoveLeft() {
@@ -80,8 +97,15 @@ func (b *Brick) MoveLeft() {
 func (b *Brick) MoveRight() {
 }
 
+func (b *Brick) MoveDown() {
+	b.Position.Y -= 1
+}
+
 func (b *Brick) Drop() {
 }
 
 func NextBrick() {
+	rand.Seed(time.Now().UTC().UnixNano())
+	CurrentBrick = &Bricks[rand.Intn(7)]
+	CurrentBrick.Position = Position{0, 0}
 }
