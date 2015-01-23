@@ -29,6 +29,8 @@ func HandleGame() {
 
 	for Running {
 
+		CurrentBrick.MoveDown()
+
 		GameNextStep()
 		time.Sleep(GameTick)
 	}

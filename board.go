@@ -17,16 +17,12 @@ type Board struct {
 
 func (b *Board) Draw() {
 
-	CurrentBrick.DrawOnBoard()
-	// zero not filled cells
-
 	for row, cells := range b.Matrix {
 		for col, cell := range cells {
 			x, y := b.Position.X+row, b.Position.Y+col
 			termbox.SetCell(x, y, cell.Char.Ch, cell.Char.Fg, cell.Char.Bg)
 		}
 	}
-
 }
 
 func (b *Board) DrawFrame() {
@@ -48,13 +44,25 @@ func (b *Board) DrawFrame() {
 
 }
 
+func (b *Board) ResetEmptyCells() {
+
+	for x, cells := range b.Matrix {
+		for y, cell := range cells {
+			if cell.Filled == false {
+				b.Matrix[x][y].Char.Fg = termbox.ColorDefault
+				b.Matrix[x][y].Char.Bg = termbox.ColorBlack
+				b.Matrix[x][y].Char.Ch = ' '
+			}
+		}
+	}
+}
+
 func NewBoard(x, y int) *Board {
 
 	var board Board
 
 	board.Position = Position{X: x, Y: y}
 
-	// TODO this probably can be done better
 	for x, cells := range board.Matrix {
 		for y := range cells {
 			board.Matrix[x][y].Char.Fg = termbox.ColorDefault
@@ -74,9 +82,23 @@ func HandleBoards() {
 
 	for Running {
 
+		//TODO
+
+		if MyPlayer != nil {
+			/* Reset empty cells (not filled) */
+			MyPlayer.Board.ResetEmptyCells()
+		}
+
+		if CurrentBrick != nil {
+			/* Draw current brick on MyPlayer's board */
+			CurrentBrick.DrawOnBoard()
+		}
+
+		/* Draw all player's boards*/
 		for _, player := range Players {
 			player.Board.Draw()
 		}
+
 		time.Sleep(100 * time.Millisecond)
 	}
 

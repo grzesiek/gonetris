@@ -15,6 +15,7 @@ var (
 
 func init() {
 	Players = make([]*Player, 0, opts.Players)
+	MyPlayer = nil
 }
 
 func NewPlayer() *Player {

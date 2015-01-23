@@ -71,6 +71,8 @@ func init() {
 	Bricks[5] = TBrick
 	Bricks[6] = ZBrick
 
+	CurrentBrick = nil
+
 }
 
 func (b *Brick) DrawOnBoard() {
@@ -78,7 +80,7 @@ func (b *Brick) DrawOnBoard() {
 	for bx, cells := range b.Layout {
 		for by, cell := range cells {
 			x, y := b.Position.X+(bx*2), b.Position.Y+by
-			if cell == 1 {
+			if cell == 1 && MyPlayer != nil {
 				MyPlayer.Board.Matrix[x][y].Char.Ch = '['
 				MyPlayer.Board.Matrix[x+1][y].Char.Ch = ']'
 				MyPlayer.Board.Matrix[x][y].Char.Bg = b.Color
@@ -98,7 +100,7 @@ func (b *Brick) MoveRight() {
 }
 
 func (b *Brick) MoveDown() {
-	b.Position.Y -= 1
+	b.Position.Y += 1
 }
 
 func (b *Brick) Drop() {
