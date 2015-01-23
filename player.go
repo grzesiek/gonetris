@@ -9,19 +9,20 @@ type Player struct {
 }
 
 var (
-	Players  []*Player
-	MyPlayer *Player
+	Players    []*Player
+	MyPlayer   *Player
+	PlayerChan = make(chan *Player)
 )
 
 func init() {
 	Players = make([]*Player, 0, opts.Players)
-	MyPlayer = nil
 }
 
 func NewPlayer() *Player {
 
 	var player Player
 	player.Board = NewBoard(5, 5)
+	PlayerChan <- &player
 
 	return &player
 }

@@ -6,13 +6,10 @@ import (
 
 var (
 	Paused   = true
-	GameTick = 1000 * time.Millisecond
+	GameTick = 300 * time.Millisecond
 )
 
 func init() {
-}
-
-func GameNextStep() {
 }
 
 func HandleGame() {
@@ -25,13 +22,12 @@ func HandleGame() {
 	MyPlayer = NewPlayer()
 	Players = append(Players, MyPlayer)
 
+	/* Draw first brick */
 	NextBrick()
 
 	for Running {
 
 		CurrentBrick.MoveDown()
-
-		GameNextStep()
 		time.Sleep(GameTick)
 	}
 }

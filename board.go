@@ -80,19 +80,15 @@ func HandleBoards() {
 
 	defer Wg.Done()
 
+	player := <-PlayerChan
+	brick := <-BrickChan
+
 	for Running {
 
-		//TODO
-
-		if MyPlayer != nil {
-			/* Reset empty cells (not filled) */
-			MyPlayer.Board.ResetEmptyCells()
-		}
-
-		if CurrentBrick != nil {
-			/* Draw current brick on MyPlayer's board */
-			CurrentBrick.DrawOnBoard()
-		}
+		/* Reset empty cells (not filled) */
+		player.Board.ResetEmptyCells()
+		/* Draw current brick on MyPlayer's board */
+		brick.DrawOnBoard()
 
 		/* Draw all player's boards*/
 		for _, player := range Players {
