@@ -2,13 +2,16 @@ package main
 
 import (
 	"github.com/nsf/termbox-go"
-	"time"
 )
 
 type Position struct {
 	X int
 	Y int
 }
+
+var (
+	TerminalEvent = make(chan bool)
+)
 
 func init() {
 
@@ -32,9 +35,8 @@ func HandleTerminal() {
 	defer Wg.Done()
 	defer termbox.Close()
 
-	for Running {
+	for range TerminalEvent {
 
 		termbox.Flush()
-		time.Sleep(50 * time.Millisecond)
 	}
 }

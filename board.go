@@ -2,7 +2,10 @@ package main
 
 import (
 	"github.com/nsf/termbox-go"
-	"time"
+)
+
+var (
+	BoardEvent = make(chan int)
 )
 
 type BoardCell struct {
@@ -102,7 +105,7 @@ func HandleBoards() {
 	brick := <-BrickChan
 	board := player.Board
 
-	for Running {
+	for range BoardEvent {
 
 		/* Reset empty cells (not filled) */
 		board.ResetEmptyCells()
@@ -115,7 +118,8 @@ func HandleBoards() {
 			player.Board.Draw()
 		}
 
-		time.Sleep(80 * time.Millisecond)
+		TerminalEvent <- true
+
 	}
 
 }

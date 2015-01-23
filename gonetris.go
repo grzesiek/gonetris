@@ -36,3 +36,9 @@ func main() {
 	Wg.Wait()
 
 }
+
+func Quit() {
+
+	close(TerminalEvent)
+	close(BoardEvent)
+}

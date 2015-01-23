@@ -15,6 +15,7 @@ func HandleKeys() {
 			switch event.Ch {
 			case 'q': /*		Quit		*/
 				Running = false
+				Quit()
 			}
 		}
 	}
