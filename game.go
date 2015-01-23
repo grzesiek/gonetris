@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	Paused   = true
+	Paused   = false
 	GameTick = 400 * time.Millisecond
 )
 
@@ -27,7 +27,9 @@ func HandleGame() {
 
 	for Running {
 
-		CurrentBrick.MoveDown()
+		if !Paused {
+			CurrentBrick.MoveDown()
+		}
 		time.Sleep(GameTick)
 	}
 }

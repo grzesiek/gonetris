@@ -78,6 +78,36 @@ func (b *Board) DrawBrick(brick *Brick) {
 
 }
 
+func (board *Board) BrickSticked(brick *Brick) (sticked bool) {
+
+	for bx, cells := range brick.Layout {
+		for by, cell := range cells {
+			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
+			if cell == 1 && len(board.Matrix) == y+1 {
+				return true
+			}
+			if cell == 1 && board.Matrix[x][y+1].Filled {
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+func (board *Board) FillWithBrick(brick *Brick) {
+
+	for bx, cells := range brick.Layout {
+		for by, cell := range cells {
+			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
+			if cell == 1 {
+				board.Matrix[x][y].Filled = true
+				board.Matrix[x+1][y].Filled = true
+			}
+		}
+	}
+}
+
 func NewBoard(x, y int) *Board {
 
 	var board Board
@@ -105,13 +135,22 @@ func HandleBoards() {
 	brick := <-BrickChan
 	board := player.Board
 
+	/* TODO: Move to BoardEvent *Board, and update only
+	 *       one at the time
+	 */
 	for range BoardEvent {
 
 		/* Reset empty cells (not filled) */
 		board.ResetEmptyCells()
+
 		/* Draw current brick on MyPlayer's board */
 		board.DrawBrick(brick)
-		/*  */
+
+		/* Check brick position */
+		if board.BrickSticked(brick) {
+			board.FillWithBrick(brick)
+			NextBrick()
+		}
 
 		/* Draw all player's boards*/
 		for _, player := range Players {
@@ -119,7 +158,6 @@ func HandleBoards() {
 		}
 
 		TerminalEvent <- true
-
 	}
 
 }
