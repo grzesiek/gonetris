@@ -6,7 +6,7 @@ import (
 
 var (
 	Paused   = true
-	GameTick = 300 * time.Millisecond
+	GameTick = 400 * time.Millisecond
 )
 
 func init() {

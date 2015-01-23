@@ -74,24 +74,6 @@ func init() {
 
 }
 
-func (b *Brick) DrawOnBoard() {
-
-	for bx, cells := range b.Layout {
-		for by, cell := range cells {
-			x, y := b.Position.X+(bx*2), b.Position.Y+by
-			if cell == 1 && MyPlayer != nil {
-				MyPlayer.Board.Matrix[x][y].Char.Ch = '['
-				MyPlayer.Board.Matrix[x+1][y].Char.Ch = ']'
-				MyPlayer.Board.Matrix[x][y].Char.Bg = b.Color
-				MyPlayer.Board.Matrix[x+1][y].Char.Bg = b.Color
-				MyPlayer.Board.Matrix[x][y].Char.Fg = termbox.ColorBlack
-				MyPlayer.Board.Matrix[x+1][y].Char.Fg = termbox.ColorBlack
-			}
-		}
-	}
-
-}
-
 func (b *Brick) MoveLeft() {
 }
 

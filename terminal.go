@@ -35,6 +35,6 @@ func HandleTerminal() {
 	for Running {
 
 		termbox.Flush()
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(50 * time.Millisecond)
 	}
 }

@@ -57,6 +57,24 @@ func (b *Board) ResetEmptyCells() {
 	}
 }
 
+func (b *Board) DrawBrick(brick *Brick) {
+
+	for bx, cells := range brick.Layout {
+		for by, cell := range cells {
+			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
+			if cell == 1 {
+				b.Matrix[x][y].Char.Ch = '['
+				b.Matrix[x+1][y].Char.Ch = ']'
+				b.Matrix[x][y].Char.Bg = brick.Color
+				b.Matrix[x+1][y].Char.Bg = brick.Color
+				b.Matrix[x][y].Char.Fg = termbox.ColorBlack
+				b.Matrix[x+1][y].Char.Fg = termbox.ColorBlack
+			}
+		}
+	}
+
+}
+
 func NewBoard(x, y int) *Board {
 
 	var board Board
@@ -82,20 +100,22 @@ func HandleBoards() {
 
 	player := <-PlayerChan
 	brick := <-BrickChan
+	board := player.Board
 
 	for Running {
 
 		/* Reset empty cells (not filled) */
-		player.Board.ResetEmptyCells()
+		board.ResetEmptyCells()
 		/* Draw current brick on MyPlayer's board */
-		brick.DrawOnBoard()
+		board.DrawBrick(brick)
+		/*  */
 
 		/* Draw all player's boards*/
 		for _, player := range Players {
 			player.Board.Draw()
 		}
 
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(80 * time.Millisecond)
 	}
 
 }
