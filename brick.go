@@ -95,5 +95,4 @@ func NextBrick() {
 	rand.Seed(time.Now().UTC().UnixNano())
 	CurrentBrick = &Bricks[rand.Intn(7)]
 	CurrentBrick.Position = Position{0, 0}
-	BrickChan <- CurrentBrick
 }

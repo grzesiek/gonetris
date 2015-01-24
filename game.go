@@ -24,6 +24,7 @@ func HandleGame() {
 
 	/* Draw first brick */
 	NextBrick()
+	BrickChan <- CurrentBrick
 
 	for Running {
 
