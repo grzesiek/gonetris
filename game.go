@@ -22,14 +22,19 @@ func HandleGame() {
 	MyPlayer = NewPlayer()
 	Players = append(Players, MyPlayer)
 
-	/* Draw first brick */
-	NextBrick()
-	BrickChan <- CurrentBrick
+	/* First, random brick */
+	brick := NextBrick()
+	BricksChan <- brick
 
 	for Running {
 
 		if !Paused {
-			CurrentBrick.MoveDown()
+			select {
+			case newBrick := <-BricksChan:
+				brick = newBrick
+			default:
+			}
+			brick.MoveDown()
 		}
 		time.Sleep(GameTick)
 	}

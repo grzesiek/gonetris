@@ -13,9 +13,8 @@ type Brick struct {
 }
 
 var (
-	CurrentBrick *Brick
-	Bricks       [7]Brick
-	BrickChan    = make(chan *Brick)
+	Bricks     [7]Brick
+	BricksChan = make(chan *Brick)
 )
 
 func init() {
@@ -91,8 +90,9 @@ func (b *Brick) Drop() {
 	BoardEvent <- 0
 }
 
-func NextBrick() {
+func NextBrick() *Brick {
 	rand.Seed(time.Now().UTC().UnixNano())
-	CurrentBrick = &Bricks[rand.Intn(7)]
-	CurrentBrick.Position = Position{0, 0}
+	brick := &Bricks[rand.Intn(7)]
+	brick.Position = Position{0, 0}
+	return brick
 }

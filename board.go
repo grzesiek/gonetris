@@ -132,7 +132,7 @@ func HandleBoards() {
 	defer Wg.Done()
 
 	player := <-PlayerChan
-	brick := <-BrickChan
+	brick := <-BricksChan
 	board := player.Board
 
 	/* TODO: Move to BoardEvent *Board, and update only
@@ -149,7 +149,8 @@ func HandleBoards() {
 		/* Check brick position */
 		if board.BrickSticked(brick) {
 			board.FillWithBrick(brick)
-			NextBrick()
+			brick = NextBrick()
+			BricksChan <- brick
 		}
 
 		/* Draw all player's boards*/
