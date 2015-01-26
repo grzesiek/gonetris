@@ -96,6 +96,17 @@ func NextBrick() *Brick {
 	return brick
 }
 
+/* TODO: This should be moved to different place, maybe type Game */
+
+func GetBrick() *Brick {
+	BrickGet <- true
+	return <-BricksChan
+}
+
+func BrickMoveDown() {
+	BrickDown <- true
+}
+
 func HandleBricks() {
 
 	defer Wg.Done()

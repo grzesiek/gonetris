@@ -25,7 +25,7 @@ func HandleGame() {
 	for Running {
 
 		if !Paused {
-			BrickDown <- true
+			BrickMoveDown()
 			BoardEvent <- MyPlayer.Board
 		}
 
