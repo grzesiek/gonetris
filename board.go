@@ -132,7 +132,7 @@ func HandleBoards() {
 	defer Wg.Done()
 
 	player := <-PlayerChan
-	brick := GetBrick()
+	brick := GoGame.GetBrick()
 
 	for board := range BoardEvent {
 		/* This is MyPlayer's board event */
@@ -147,8 +147,8 @@ func HandleBoards() {
 			/* Check brick position */
 			if board.BrickSticked(brick) {
 				board.FillWithBrick(brick)
-				BrickNew <- true
-				brick = GetBrick()
+				GoGame.NewBrick()
+				brick = GoGame.GetBrick()
 			}
 		}
 
