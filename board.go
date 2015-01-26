@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	BoardEvent = make(chan int)
+	BoardEvent = make(chan *Board)
 )
 
 type BoardCell struct {
@@ -133,31 +133,27 @@ func HandleBoards() {
 
 	player := <-PlayerChan
 	brick := <-BricksChan
-	board := player.Board
 
-	/* TODO: Move to BoardEvent *Board, and update only
-	 *       one at the time
-	 */
-	for range BoardEvent {
+	for board := range BoardEvent {
 
-		/* Reset empty cells (not filled) */
-		board.ResetEmptyCells()
+		if board == player.Board { /* This is MyPlayer's board event */
 
-		/* Draw current brick on MyPlayer's board */
-		board.DrawBrick(brick)
+			/* Reset empty cells (not filled) */
+			board.ResetEmptyCells()
 
-		/* Check brick position */
-		if board.BrickSticked(brick) {
-			board.FillWithBrick(brick)
-			brick = NextBrick()
-			BricksChan <- brick
+			/* Draw current brick on MyPlayer's board */
+			board.DrawBrick(brick)
+
+			/* Check brick position */
+			if board.BrickSticked(brick) {
+				board.FillWithBrick(brick)
+				brick = NextBrick()
+				BricksChan <- brick
+			}
+
 		}
 
-		/* Draw all player's boards*/
-		for _, player := range Players {
-			player.Board.Draw()
-		}
-
+		board.Draw()
 		TerminalEvent <- true
 	}
 

@@ -35,6 +35,7 @@ func HandleGame() {
 			default:
 			}
 			brick.MoveDown()
+			BoardEvent <- MyPlayer.Board
 		}
 		time.Sleep(GameTick)
 	}

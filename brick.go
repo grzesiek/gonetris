@@ -74,20 +74,16 @@ func init() {
 }
 
 func (b *Brick) MoveLeft() {
-	BoardEvent <- 0
 }
 
 func (b *Brick) MoveRight() {
-	BoardEvent <- 0
 }
 
 func (b *Brick) MoveDown() {
 	b.Position.Y += 1
-	BoardEvent <- 0
 }
 
 func (b *Brick) Drop() {
-	BoardEvent <- 0
 }
 
 func NextBrick() *Brick {
