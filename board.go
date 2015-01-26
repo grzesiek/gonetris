@@ -132,11 +132,12 @@ func HandleBoards() {
 	defer Wg.Done()
 
 	player := <-PlayerChan
+	BrickGet <- true
 	brick := <-BricksChan
 
 	for board := range BoardEvent {
-
-		if board == player.Board { /* This is MyPlayer's board event */
+		/* This is MyPlayer's board event */
+		if board == player.Board {
 
 			/* Reset empty cells (not filled) */
 			board.ResetEmptyCells()
@@ -147,14 +148,13 @@ func HandleBoards() {
 			/* Check brick position */
 			if board.BrickSticked(brick) {
 				board.FillWithBrick(brick)
-				brick = NextBrick()
-				BricksChan <- brick
+				BrickNew <- true
+				BrickGet <- true
+				brick = <-BricksChan
 			}
-
 		}
 
 		board.Draw()
 		TerminalEvent <- true
 	}
-
 }

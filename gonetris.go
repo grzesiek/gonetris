@@ -26,9 +26,10 @@ func init() {
 
 func main() {
 
-	Wg.Add(4)
+	Wg.Add(5)
 
 	go HandleTerminal()
+	go HandleBricks()
 	go HandleBoards()
 	go HandleKeys()
 	go HandleGame()

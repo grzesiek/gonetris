@@ -15,6 +15,9 @@ type Brick struct {
 var (
 	Bricks     [7]Brick
 	BricksChan = make(chan *Brick)
+	BrickNew   = make(chan bool)
+	BrickDown  = make(chan bool)
+	BrickGet   = make(chan bool)
 )
 
 func init() {
@@ -91,4 +94,26 @@ func NextBrick() *Brick {
 	brick := &Bricks[rand.Intn(7)]
 	brick.Position = Position{0, 0}
 	return brick
+}
+
+func HandleBricks() {
+
+	defer Wg.Done()
+	brick := NextBrick()
+
+	for Running {
+
+		select {
+		case <-BrickNew:
+			/* Change current brick */
+			brick = NextBrick()
+		case <-BrickDown:
+			/* Lower brick */
+			brick.MoveDown()
+		case <-BrickGet:
+			/* Send current brick to channel */
+			BricksChan <- brick
+		}
+
+	}
 }
