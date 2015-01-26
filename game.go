@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	GoGame Game
+	GoGame *Game
 )
 
 type Game struct {
@@ -14,22 +14,9 @@ type Game struct {
 }
 
 func init() {
-	GoGame = Game{
+	GoGame = &Game{
 		Paused: false,
 		Tick:   (400 * time.Millisecond)}
-}
-
-func (game Game) Loop() {
-
-	for Running {
-
-		if !game.Paused {
-			game.MoveDownBrick()
-			BoardEvent <- MyPlayer.Board
-		}
-
-		time.Sleep(game.Tick)
-	}
 }
 
 /* Add first, default player */
@@ -50,6 +37,23 @@ func (game Game) MoveDownBrick() {
 
 func (game Game) NewBrick() {
 	BrickNew <- true
+}
+
+func (game *Game) Pause() {
+	game.Paused = true
+}
+
+func (game *Game) Loop() {
+
+	for Running {
+
+		if Running && !game.Paused {
+			game.MoveDownBrick()
+			BoardEvent <- MyPlayer.Board
+		}
+
+		time.Sleep(game.Tick)
+	}
 }
 
 func HandleGame() {

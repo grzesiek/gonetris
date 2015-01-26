@@ -113,6 +113,8 @@ func HandleBricks() {
 		case <-BrickGet:
 			/* Send current brick to channel */
 			BricksChan <- brick
+		case <-QuitEvent:
+			break
 		}
 
 	}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/nsf/termbox-go"
 )
 
@@ -33,6 +34,7 @@ func PrintText(text string, p Position) {
 func HandleTerminal() {
 
 	defer Wg.Done()
+	defer fmt.Println("Bye bye !")
 	defer termbox.Close()
 
 	for range TerminalEvent {
