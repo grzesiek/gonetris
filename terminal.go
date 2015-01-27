@@ -11,7 +11,7 @@ type Position struct {
 }
 
 var (
-	TerminalEvent = make(chan bool)
+	TerminalEventChan = make(chan bool)
 )
 
 func init() {
@@ -37,7 +37,7 @@ func HandleTerminal() {
 	defer fmt.Println("Bye bye !")
 	defer termbox.Close()
 
-	for range TerminalEvent {
+	for range TerminalEventChan {
 
 		termbox.Flush()
 	}

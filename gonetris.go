@@ -40,7 +40,7 @@ func main() {
 
 func Quit() {
 
-	close(BrickEventsChan)
-	close(BoardEvent)
-	close(TerminalEvent)
+	close(BrickEventChan)
+	close(BoardEventChan)
+	close(TerminalEventChan)
 }

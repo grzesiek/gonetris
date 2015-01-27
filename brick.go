@@ -22,9 +22,9 @@ const (
 )
 
 var (
-	Bricks          [7]Brick
-	BricksChan      = make(chan *Brick)
-	BrickEventsChan = make(chan BrickEvent)
+	Bricks         [7]Brick
+	BricksChan     = make(chan *Brick)
+	BrickEventChan = make(chan BrickEvent)
 )
 
 func init() {
@@ -109,7 +109,7 @@ func HandleBricks() {
 	brick := NextBrick()
 	BricksChan <- brick
 
-	for e := range BrickEventsChan {
+	for e := range BrickEventChan {
 
 		switch e {
 		case BrickNew:

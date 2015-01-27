@@ -5,7 +5,7 @@ import (
 )
 
 var (
-	BoardEvent = make(chan *Board)
+	BoardEventChan = make(chan *Board)
 )
 
 type BoardCell struct {
@@ -134,7 +134,7 @@ func HandleBoards() {
 	player := <-PlayerChan
 	brick := <-BricksChan
 
-	for board := range BoardEvent {
+	for board := range BoardEventChan {
 		/* This is MyPlayer's board event */
 		if board == player.Board {
 
@@ -147,12 +147,12 @@ func HandleBoards() {
 			/* Check brick position */
 			if board.BrickSticked(brick) {
 				board.FillWithBrick(brick)
-				BrickEventsChan <- BrickNew
+				BrickEventChan <- BrickNew
 				brick = <-BricksChan
 			}
 		}
 
 		board.Draw()
-		TerminalEvent <- true
+		TerminalEventChan <- true
 	}
 }

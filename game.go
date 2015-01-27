@@ -35,8 +35,8 @@ func (game *Game) Loop() {
 	for Running {
 
 		if Running && !game.Paused {
-			BrickEventsChan <- BrickMoveDown
-			BoardEvent <- MyPlayer.Board
+			BrickEventChan <- BrickMoveDown
+			BoardEventChan <- MyPlayer.Board
 		}
 
 		time.Sleep(game.Tick)
