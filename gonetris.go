@@ -11,9 +11,8 @@ var opts struct {
 }
 
 var (
-	Running   = true
-	QuitEvent = make(chan bool)
-	Wg        sync.WaitGroup
+	Running = true
+	Wg      sync.WaitGroup
 )
 
 func init() {
@@ -41,8 +40,7 @@ func main() {
 
 func Quit() {
 
-	QuitEvent <- true
-	close(TerminalEvent)
+	close(BrickEventsChan)
 	close(BoardEvent)
-
+	close(TerminalEvent)
 }

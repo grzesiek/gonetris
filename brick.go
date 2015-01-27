@@ -12,12 +12,19 @@ type Brick struct {
 	Color    termbox.Attribute
 }
 
+type BrickEvent uint16
+
+const (
+	BrickMoveDown BrickEvent = iota
+	BrickNew
+	BrickMoveLeft
+	BrickMoveRight
+)
+
 var (
-	Bricks     [7]Brick
-	BricksChan = make(chan *Brick)
-	BrickNew   = make(chan bool)
-	BrickDown  = make(chan bool)
-	BrickGet   = make(chan bool)
+	Bricks          [7]Brick
+	BricksChan      = make(chan *Brick)
+	BrickEventsChan = make(chan BrickEvent)
 )
 
 func init() {
@@ -100,21 +107,18 @@ func HandleBricks() {
 
 	defer Wg.Done()
 	brick := NextBrick()
+	BricksChan <- brick
 
-	for Running {
+	for e := range BrickEventsChan {
 
-		select {
-		case <-BrickNew:
+		switch e {
+		case BrickNew:
 			/* Change current brick */
 			brick = NextBrick()
-		case <-BrickDown:
+			BricksChan <- brick
+		case BrickMoveDown:
 			/* Lower brick */
 			brick.MoveDown()
-		case <-BrickGet:
-			/* Send current brick to channel */
-			BricksChan <- brick
-		case <-QuitEvent:
-			break
 		}
 
 	}

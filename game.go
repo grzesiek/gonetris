@@ -26,19 +26,6 @@ func (game Game) AddFirstPlayer() {
 	Players = append(Players, MyPlayer)
 }
 
-func (game Game) GetBrick() *Brick {
-	BrickGet <- true
-	return <-BricksChan
-}
-
-func (game Game) MoveDownBrick() {
-	BrickDown <- true
-}
-
-func (game Game) NewBrick() {
-	BrickNew <- true
-}
-
 func (game *Game) Pause() {
 	game.Paused = true
 }
@@ -48,7 +35,7 @@ func (game *Game) Loop() {
 	for Running {
 
 		if Running && !game.Paused {
-			game.MoveDownBrick()
+			BrickEventsChan <- BrickMoveDown
 			BoardEvent <- MyPlayer.Board
 		}
 
