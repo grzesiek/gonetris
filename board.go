@@ -95,17 +95,39 @@ func (board *Board) MoveBrickDown() {
 	board.Brick.MoveDown()
 }
 
-func (board *Board) BrickSticked() (sticked bool) {
+func (board *Board) BrickTouched(border BorderType, move bool) bool {
 
 	brick := board.Brick
 	for bx, cells := range brick.Layout {
 		for by, cell := range cells {
 			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
-			if cell == 1 && len(board.Matrix) == y+1 {
-				return true
-			}
-			if cell == 1 && board.Matrix[x][y+1].Filled {
-				return true
+			if cell == 1 {
+				/* Touched right border */
+				if border == BorderRight && x+1 == len(board.Matrix)-1 {
+					return true
+				}
+				/* Touched left border */
+				if border == BorderLeft && x == 0 {
+					return true
+				}
+				/* Touched bottom border */
+				if border == BorderBottom && len(board.Matrix) == y+1 {
+					return true
+				}
+				/* Touched other brick, that already filled at the bottom */
+				if board.Matrix[x][y+1].Filled {
+					return true
+				}
+				if move { /* Check this only if we are moving brick */
+					/* Touched other brick, that already filled at left */
+					if x > 2 && board.Matrix[x-2][y].Filled {
+						return true
+					}
+					/* Touched other brick, that already filled at right */
+					if x+2 < len(board.Matrix) && board.Matrix[x+2][y].Filled {
+						return true
+					}
+				}
 			}
 		}
 	}
@@ -125,26 +147,6 @@ func (board *Board) FillWithBrick() {
 			}
 		}
 	}
-}
-
-func (board *Board) BrickTouches(border BorderType) bool {
-
-	brick := board.Brick
-	for bx, cells := range brick.Layout {
-		for by, cell := range cells {
-			x, _ := brick.Position.X+(bx*2), brick.Position.Y+by
-			if cell == 1 {
-				if border == BorderRight && x+1 == len(board.Matrix)-1 {
-					return true
-				}
-				if border == BorderLeft && x == 0 {
-					return true
-				}
-			}
-		}
-	}
-
-	return false
 }
 
 func (board *Board) NextBrick() *Brick {
@@ -185,7 +187,7 @@ func HandleBoards() {
 		switch event {
 		case BrickMoveDown:
 			/* Check if bricked touch something */
-			if board.BrickSticked() {
+			if board.BrickTouched(BorderBottom, false) {
 				/* Fill with current brick*/
 				board.FillWithBrick()
 				/* Chose next brick */
@@ -194,11 +196,11 @@ func HandleBoards() {
 				board.Brick.MoveDown()
 			}
 		case BrickMoveLeft:
-			if !board.BrickTouches(BorderLeft) {
+			if !board.BrickTouched(BorderLeft, true) {
 				board.Brick.MoveLeft()
 			}
 		case BrickMoveRight:
-			if !board.BrickTouches(BorderRight) {
+			if !board.BrickTouched(BorderRight, true) {
 				board.Brick.MoveRight()
 			}
 		}
