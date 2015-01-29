@@ -5,7 +5,7 @@ import (
 )
 
 func init() {
-	Tick = 100 * time.Millisecond
+	Tick = 400 * time.Millisecond
 }
 
 func HandleGame() {

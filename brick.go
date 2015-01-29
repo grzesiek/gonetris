@@ -79,9 +79,11 @@ func init() {
 }
 
 func (b *Brick) MoveLeft() {
+	b.Position.X -= 2
 }
 
 func (b *Brick) MoveRight() {
+	b.Position.X += 2
 }
 
 func (b *Brick) MoveDown() {

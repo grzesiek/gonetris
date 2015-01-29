@@ -40,6 +40,7 @@ func main() {
 }
 
 func Quit() {
+	Running = false
 	close(BoardEvent)
 	close(TerminalEvent)
 }

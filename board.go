@@ -21,6 +21,13 @@ type Board struct {
 	Brick    *Brick
 }
 
+type BorderType uint16
+
+const (
+	BorderLeft BorderType = iota
+	BorderRight
+)
+
 func (b *Board) Draw() {
 
 	for row, cells := range b.Matrix {
@@ -118,6 +125,33 @@ func (board *Board) FillWithBrick() {
 	}
 }
 
+func (board *Board) BrickTouches(border BorderType) bool {
+
+	brick := board.Brick
+	for bx, cells := range brick.Layout {
+		for by, cell := range cells {
+			x, _ := brick.Position.X+(bx*2), brick.Position.Y+by
+			if cell == 1 {
+				if border == BorderRight && x+1 == len(board.Matrix)-1 {
+					return true
+				}
+				if border == BorderLeft && x == 0 {
+					return true
+				}
+			}
+		}
+	}
+
+	return false
+}
+
+func (board *Board) NextBrick() *Brick {
+	rand.Seed(time.Now().UTC().UnixNano())
+	board.Brick = &Bricks[rand.Intn(7)]
+	board.Brick.Position = Position{0, 0}
+	return board.Brick
+}
+
 func NewBoard(x, y int) *Board {
 
 	var board Board
@@ -137,13 +171,6 @@ func NewBoard(x, y int) *Board {
 	return &board
 }
 
-func (board *Board) NextBrick() *Brick {
-	rand.Seed(time.Now().UTC().UnixNano())
-	board.Brick = &Bricks[rand.Intn(7)]
-	board.Brick.Position = Position{0, 0}
-	return board.Brick
-}
-
 func HandleBoards() {
 
 	defer Wg.Done()
@@ -155,7 +182,6 @@ func HandleBoards() {
 
 		switch event {
 		case BrickMoveDown:
-
 			/* Check if bricked touch something */
 			if board.BrickSticked() {
 				/* Fill with current brick*/
@@ -165,7 +191,14 @@ func HandleBoards() {
 			} else {
 				board.Brick.MoveDown()
 			}
-
+		case BrickMoveLeft:
+			if !board.BrickTouches(BorderLeft) {
+				board.Brick.MoveLeft()
+			}
+		case BrickMoveRight:
+			if !board.BrickTouches(BorderRight) {
+				board.Brick.MoveRight()
+			}
 		}
 
 		/* Reset empty cells (not filled) */

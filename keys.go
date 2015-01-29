@@ -13,9 +13,14 @@ func HandleKeys() {
 		if event := termbox.PollEvent(); event.Type == termbox.EventKey {
 
 			switch event.Ch {
-			case 'q': /*		Quit		*/
-				Running = false
+			case 'p': /*	Pause  					 */
+				Paused = true
+			case 'q': /*	Quit						 */
 				Quit()
+			case 'j': /*	Move brick left */
+				BoardEvent <- BrickMoveLeft
+			case 'l': /*	Move brick right */
+				BoardEvent <- BrickMoveRight
 			}
 		}
 	}
