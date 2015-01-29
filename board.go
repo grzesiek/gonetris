@@ -26,6 +26,8 @@ type BorderType uint16
 const (
 	BorderLeft BorderType = iota
 	BorderRight
+	BorderTop
+	BorderBottom
 )
 
 func (b *Board) Draw() {
