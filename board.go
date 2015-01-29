@@ -2,10 +2,12 @@ package main
 
 import (
 	"github.com/nsf/termbox-go"
+	"math/rand"
+	"time"
 )
 
 var (
-	BoardEventChan = make(chan *Board)
+	BoardEvent = make(chan Event)
 )
 
 type BoardCell struct {
@@ -16,6 +18,7 @@ type BoardCell struct {
 type Board struct {
 	Matrix   [20][20]BoardCell
 	Position Position
+	Brick    *Brick
 }
 
 func (b *Board) Draw() {
@@ -60,8 +63,9 @@ func (b *Board) ResetEmptyCells() {
 	}
 }
 
-func (b *Board) DrawBrick(brick *Brick) {
+func (b *Board) DrawBrick() {
 
+	brick := b.Brick
 	for bx, cells := range brick.Layout {
 		for by, cell := range cells {
 			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
@@ -78,8 +82,13 @@ func (b *Board) DrawBrick(brick *Brick) {
 
 }
 
-func (board *Board) BrickSticked(brick *Brick) (sticked bool) {
+func (board *Board) MoveBrickDown() {
+	board.Brick.MoveDown()
+}
 
+func (board *Board) BrickSticked() (sticked bool) {
+
+	brick := board.Brick
 	for bx, cells := range brick.Layout {
 		for by, cell := range cells {
 			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
@@ -95,8 +104,9 @@ func (board *Board) BrickSticked(brick *Brick) (sticked bool) {
 	return false
 }
 
-func (board *Board) FillWithBrick(brick *Brick) {
+func (board *Board) FillWithBrick() {
 
+	brick := board.Brick
 	for bx, cells := range brick.Layout {
 		for by, cell := range cells {
 			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
@@ -127,32 +137,46 @@ func NewBoard(x, y int) *Board {
 	return &board
 }
 
+func (board *Board) NextBrick() *Brick {
+	rand.Seed(time.Now().UTC().UnixNano())
+	board.Brick = &Bricks[rand.Intn(7)]
+	board.Brick.Position = Position{0, 0}
+	return board.Brick
+}
+
 func HandleBoards() {
 
 	defer Wg.Done()
-
 	player := <-PlayerChan
-	brick := <-BricksChan
+	board := player.Board
+	board.NextBrick()
 
-	for board := range BoardEventChan {
-		/* This is MyPlayer's board event */
-		if board == player.Board {
+	for event := range BoardEvent {
 
-			/* Reset empty cells (not filled) */
-			board.ResetEmptyCells()
+		switch event {
+		case BrickMoveDown:
 
-			/* Draw current brick on MyPlayer's board */
-			board.DrawBrick(brick)
-
-			/* Check brick position */
-			if board.BrickSticked(brick) {
-				board.FillWithBrick(brick)
-				BrickEventChan <- BrickNew
-				brick = <-BricksChan
+			/* Check if bricked touch something */
+			if board.BrickSticked() {
+				/* Fill with current brick*/
+				board.FillWithBrick()
+				/* Chose next brick */
+				board.NextBrick()
+			} else {
+				board.Brick.MoveDown()
 			}
+
 		}
 
-		board.Draw()
-		TerminalEventChan <- true
+		/* Reset empty cells (not filled) */
+		board.ResetEmptyCells()
+		/* Draw current brick on MyPlayer's board */
+		board.DrawBrick()
+
+		for _, p := range Players {
+			p.Board.Draw()
+		}
+
+		TerminalEvent <- true
 	}
 }

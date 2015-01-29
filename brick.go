@@ -2,8 +2,6 @@ package main
 
 import (
 	"github.com/nsf/termbox-go"
-	"math/rand"
-	"time"
 )
 
 type Brick struct {
@@ -12,19 +10,16 @@ type Brick struct {
 	Color    termbox.Attribute
 }
 
-type BrickEvent uint16
+type Event uint16
 
 const (
-	BrickMoveDown BrickEvent = iota
-	BrickNew
+	BrickMoveDown Event = iota
 	BrickMoveLeft
 	BrickMoveRight
 )
 
 var (
-	Bricks         [7]Brick
-	BricksChan     = make(chan *Brick)
-	BrickEventChan = make(chan BrickEvent)
+	Bricks [7]Brick
 )
 
 func init() {
@@ -94,32 +89,4 @@ func (b *Brick) MoveDown() {
 }
 
 func (b *Brick) Drop() {
-}
-
-func NextBrick() *Brick {
-	rand.Seed(time.Now().UTC().UnixNano())
-	brick := &Bricks[rand.Intn(7)]
-	brick.Position = Position{0, 0}
-	return brick
-}
-
-func HandleBricks() {
-
-	defer Wg.Done()
-	brick := NextBrick()
-	BricksChan <- brick
-
-	for e := range BrickEventChan {
-
-		switch e {
-		case BrickNew:
-			/* Change current brick */
-			brick = NextBrick()
-			BricksChan <- brick
-		case BrickMoveDown:
-			/* Lower brick */
-			brick.MoveDown()
-		}
-
-	}
 }

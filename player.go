@@ -10,7 +10,6 @@ type Player struct {
 
 var (
 	Players    []*Player
-	MyPlayer   *Player
 	PlayerChan = make(chan *Player)
 )
 

@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/jessevdk/go-flags"
 	"sync"
+	"time"
 )
 
 var opts struct {
@@ -12,6 +13,8 @@ var opts struct {
 
 var (
 	Running = true
+	Paused  = false
+	Tick    time.Duration
 	Wg      sync.WaitGroup
 )
 
@@ -26,21 +29,17 @@ func init() {
 
 func main() {
 
-	Wg.Add(5)
+	Wg.Add(4)
 
 	go HandleTerminal()
-	go HandleBricks()
 	go HandleBoards()
 	go HandleKeys()
 	go HandleGame()
 
 	Wg.Wait()
-
 }
 
 func Quit() {
-
-	close(BrickEventChan)
-	close(BoardEventChan)
-	close(TerminalEventChan)
+	close(BoardEvent)
+	close(TerminalEvent)
 }
