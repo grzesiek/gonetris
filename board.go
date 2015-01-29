@@ -114,16 +114,16 @@ func (board *Board) BrickTouched(border BorderType, move bool) bool {
 				if border == BorderBottom && len(board.Matrix) == y+1 {
 					return true
 				}
-				/* Touched other brick, that already filled at the bottom */
-				if board.Matrix[x][y+1].Filled {
+				/* Touched other brick, that already filled board at the bottom */
+				if y+1 < len(board.Matrix) && board.Matrix[x][y+1].Filled {
 					return true
 				}
 				if move { /* Check this only if we are moving brick */
-					/* Touched other brick, that already filled at left */
+					/* Touched other brick, that already filled board at left */
 					if x > 2 && board.Matrix[x-2][y].Filled {
 						return true
 					}
-					/* Touched other brick, that already filled at right */
+					/* Touched other brick, that already filled board at right */
 					if x+2 < len(board.Matrix) && board.Matrix[x+2][y].Filled {
 						return true
 					}
