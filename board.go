@@ -153,6 +153,8 @@ func (board *Board) NextBrick() *Brick {
 	rand.Seed(time.Now().UTC().UnixNano())
 	board.Brick = &Bricks[rand.Intn(7)]
 	board.Brick.Position = Position{0, 0}
+	/* Board and brick are interrelated pair*/
+	board.Brick.Board = board
 	return board.Brick
 }
 
@@ -202,6 +204,10 @@ func HandleBoards() {
 		case BrickMoveRight:
 			if !board.BrickTouched(BorderRight, true) {
 				board.Brick.MoveRight()
+			}
+		case BrickRotate:
+			if !board.BrickTouched(BorderLeft|BorderRight, true) {
+				board.Brick.Rotate()
 			}
 		}
 

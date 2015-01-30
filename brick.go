@@ -8,6 +8,7 @@ type Brick struct {
 	Position Position
 	Layout   [][]int
 	Color    termbox.Attribute
+	Board    *Board
 }
 
 type Event uint16
@@ -16,6 +17,7 @@ const (
 	BrickMoveDown Event = iota
 	BrickMoveLeft
 	BrickMoveRight
+	BrickRotate
 )
 
 var (
@@ -79,15 +81,43 @@ func init() {
 }
 
 func (b *Brick) MoveLeft() {
-	b.Position.X -= 2
+	if !b.Board.BrickTouched(BorderLeft, true) {
+		b.Position.X -= 2
+	}
 }
 
 func (b *Brick) MoveRight() {
-	b.Position.X += 2
+	if !b.Board.BrickTouched(BorderRight, true) {
+		b.Position.X += 2
+	}
 }
 
 func (b *Brick) MoveDown() {
-	b.Position.Y += 1
+	/* Check if bricked touch something */
+	if b.Board.BrickTouched(BorderBottom, false) {
+		/* Fill with current brick*/
+		b.Board.FillWithBrick()
+		/* Chose next brick */
+		b.Board.NextBrick()
+	} else {
+		b.Position.Y += 1
+	}
+}
+
+func (b *Brick) Rotate() {
+
+	if !b.Board.BrickTouched(BorderLeft|BorderRight, true) {
+		newLayout := make([][]int, len(b.Layout[0]))
+		for c, _ := range newLayout {
+			newLayout[c] = make([]int, len(b.Layout))
+		}
+		for x, cells := range b.Layout {
+			for y, cell := range cells {
+				newLayout[y][x] = cell
+			}
+		}
+		b.Layout = newLayout
+	}
 }
 
 func (b *Brick) Drop() {
