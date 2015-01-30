@@ -107,15 +107,30 @@ func (b *Brick) MoveDown() {
 func (b *Brick) Rotate() {
 
 	if !b.Board.BrickTouched(BorderLeft|BorderRight, true) {
+
+		/* Transpose matrix */
+		transposed := make([][]int, len(b.Layout[0]))
+		for c, _ := range transposed {
+			transposed[c] = make([]int, len(b.Layout))
+		}
+		for x, cells := range b.Layout {
+			for y, cell := range cells {
+				transposed[y][x] = cell
+			}
+		}
+
 		newLayout := make([][]int, len(b.Layout[0]))
 		for c, _ := range newLayout {
 			newLayout[c] = make([]int, len(b.Layout))
 		}
-		for x, cells := range b.Layout {
+
+		/* Change columns to rotate right */
+		for x, cells := range transposed {
 			for y, cell := range cells {
-				newLayout[y][x] = cell
+				newLayout[x][(len(cells)-1)-y] = cell
 			}
 		}
+
 		b.Layout = newLayout
 	}
 }
