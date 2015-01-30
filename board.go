@@ -188,27 +188,13 @@ func HandleBoards() {
 
 		switch event {
 		case BrickMoveDown:
-			/* Check if bricked touch something */
-			if board.BrickTouched(BorderBottom, false) {
-				/* Fill with current brick*/
-				board.FillWithBrick()
-				/* Chose next brick */
-				board.NextBrick()
-			} else {
-				board.Brick.MoveDown()
-			}
+			board.Brick.MoveDown()
 		case BrickMoveLeft:
-			if !board.BrickTouched(BorderLeft, true) {
-				board.Brick.MoveLeft()
-			}
+			board.Brick.MoveLeft()
 		case BrickMoveRight:
-			if !board.BrickTouched(BorderRight, true) {
-				board.Brick.MoveRight()
-			}
+			board.Brick.MoveRight()
 		case BrickRotate:
-			if !board.BrickTouched(BorderLeft|BorderRight, true) {
-				board.Brick.Rotate()
-			}
+			board.Brick.Rotate()
 		}
 
 		/* Reset empty cells (not filled) */
