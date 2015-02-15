@@ -11,15 +11,6 @@ type Brick struct {
 	Board    *Board
 }
 
-type Event uint16
-
-const (
-	BrickMoveDown Event = iota
-	BrickMoveLeft
-	BrickMoveRight
-	BrickRotate
-)
-
 var (
 	Bricks [7]Brick
 )
@@ -136,4 +127,12 @@ func (b *Brick) Rotate() {
 }
 
 func (b *Brick) Drop() {
+}
+
+func HandleBrick() {
+
+	for event := range BrickEvent {
+		brick := MyPlayer.Board.Brick
+	}
+
 }

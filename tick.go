@@ -4,19 +4,19 @@ import (
 	"time"
 )
 
+var (
+	Tick time.Duration
+)
+
 func init() {
 	Tick = 200 * time.Millisecond
 }
 
-func HandleGame() {
+func HandleTick() {
 
 	defer Wg.Done()
 
-	PrintText("Game started ...", Position{X: 1, Y: 1})
-	Players = append(Players, NewPlayer())
-
 	for Running {
-
 		if !Paused {
 			BoardEvent <- BrickMoveDown
 		}

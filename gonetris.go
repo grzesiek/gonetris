@@ -14,7 +14,6 @@ var opts struct {
 var (
 	Running = true
 	Paused  = false
-	Tick    time.Duration
 	Wg      sync.WaitGroup
 )
 
@@ -25,22 +24,24 @@ func init() {
 		panic("Invalid flags !")
 	}
 
+	Tick = 200 * time.Millisecond
 }
 
 func main() {
 
-	Wg.Add(4)
+	Wg.Add(5)
 
 	go HandleTerminal()
-	go HandleBoards()
 	go HandleKeys()
-	go HandleGame()
+	go HandlePlayers()
+	go HandleBrick()
+	go HandleBoard()
+	go HandleTick()
 
 	Wg.Wait()
 }
 
 func Quit() {
 	Running = false
-	close(BoardEvent)
 	close(TerminalEvent)
 }

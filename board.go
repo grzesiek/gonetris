@@ -6,10 +6,6 @@ import (
 	"time"
 )
 
-var (
-	BoardEvent = make(chan Event)
-)
-
 type BoardCell struct {
 	Char   termbox.Cell
 	Filled bool
@@ -21,10 +17,10 @@ type Board struct {
 	Brick    *Brick
 }
 
-type BorderType uint16
+type BoardBorder uint16
 
 const (
-	BorderLeft BorderType = iota
+	BorderLeft BoardBorder = iota
 	BorderRight
 	BorderTop
 	BorderBottom
@@ -177,34 +173,20 @@ func NewBoard(x, y int) *Board {
 	return &board
 }
 
-func HandleBoards() {
+func HandleBoard() {
 
 	defer Wg.Done()
-	player := <-PlayerChan
+
+	player := <-PlayerList
 	board := player.Board
 	board.NextBrick()
 
-	for event := range BoardEvent {
-
-		switch event {
-		case BrickMoveDown:
-			board.Brick.MoveDown()
-		case BrickMoveLeft:
-			board.Brick.MoveLeft()
-		case BrickMoveRight:
-			board.Brick.MoveRight()
-		case BrickRotate:
-			board.Brick.Rotate()
-		}
+	for range BoardEvent {
 
 		/* Reset empty cells (not filled) */
 		board.ResetEmptyCells()
-		/* Draw current brick on MyPlayer's board */
+		/* Draw current brick board */
 		board.DrawBrick()
-
-		for _, p := range Players {
-			p.Board.Draw()
-		}
 
 		TerminalEvent <- true
 	}
