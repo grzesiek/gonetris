@@ -16,13 +16,13 @@ func HandleKeys() {
 			case 'p': /*	Pause  					 */
 				Paused = true
 			case 'q': /*	Quit						 */
-				Quit()
+				RunningChan <- false
 			case 'j': /*	Move brick left */
-				BoardEvent <- BrickMoveLeft
+				BrickOperation <- "MoveLeft"
 			case 'l': /*	Move brick right */
-				BoardEvent <- BrickMoveRight
+				BrickOperation <- "MoveRight"
 			case 'k': /*  Rotate brick */
-				BoardEvent <- BrickRotate
+				BrickOperation <- "Rotate"
 			}
 		}
 	}

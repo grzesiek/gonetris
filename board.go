@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+var (
+	BoardEvent = make(chan bool)
+)
+
 type BoardCell struct {
 	Char   termbox.Cell
 	Filled bool
@@ -87,11 +91,7 @@ func (b *Board) DrawBrick() {
 
 }
 
-func (board *Board) MoveBrickDown() {
-	board.Brick.MoveDown()
-}
-
-func (board *Board) BrickTouched(border BorderType, move bool) bool {
+func (board *Board) BrickTouched(border BoardBorder, move bool) bool {
 
 	brick := board.Brick
 	for bx, cells := range brick.Layout {
@@ -147,11 +147,15 @@ func (board *Board) FillWithBrick() {
 
 func (board *Board) NextBrick() *Brick {
 	rand.Seed(time.Now().UTC().UnixNano())
-	board.Brick = &Bricks[rand.Intn(7)]
-	board.Brick.Position = Position{0, 0}
+	brick := &Bricks[rand.Intn(7)]
+	brick.Position = Position{0, 0}
+
 	/* Board and brick are interrelated pair*/
-	board.Brick.Board = board
-	return board.Brick
+	brick.Board = board
+	board.Brick = brick
+
+	BrickChan <- brick
+	return brick
 }
 
 func NewBoard(x, y int) *Board {
@@ -177,7 +181,7 @@ func HandleBoard() {
 
 	defer Wg.Done()
 
-	player := <-PlayerList
+	player := <-PlayersChan
 	board := player.Board
 	board.NextBrick()
 
@@ -188,6 +192,7 @@ func HandleBoard() {
 		/* Draw current brick board */
 		board.DrawBrick()
 
+		PlayerEvent <- player
 		TerminalEvent <- true
 	}
 }

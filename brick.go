@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/nsf/termbox-go"
+	"reflect"
 )
 
 type Brick struct {
@@ -12,7 +13,9 @@ type Brick struct {
 }
 
 var (
-	Bricks [7]Brick
+	Bricks         [7]Brick
+	BrickChan      = make(chan *Brick)
+	BrickOperation = make(chan string)
 )
 
 func init() {
@@ -133,11 +136,21 @@ func HandleBrick() {
 
 	/* Wait for brick, as when we have brick, we can execute the brick actions */
 	brick := <-BrickChan
+	defer Wg.Done()
 
-	select {
-	case brick = <-BrickChan: /* New brick appeared */
-	case <-TickChan: /* Game tick - move brick down */
-	case <-BrickOperation: /* Player want to modify brick - move, rotate, drop ... */
+	for Running {
+		select {
+		case brick = <-BrickChan:
+			/* New brick appeared */
+		case <-TickChan:
+			/* Game tick - move brick down */
+			brick.MoveDown()
+		case method := <-BrickOperation:
+			/* Player want to modify brick - move, rotate, drop ... by reflection */
+			reflect.ValueOf(brick).MethodByName(method).Call([]reflect.Value{})
+		}
+
+		BoardEvent <- true
 	}
 
 }

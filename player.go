@@ -11,7 +11,7 @@ type Player struct {
 var (
 	Players     []*Player
 	MyPlayer    *Player
-	PlayersList = make(chan *Player)
+	PlayersChan = make(chan *Player)
 	PlayerEvent = make(chan *Player)
 )
 
@@ -23,7 +23,7 @@ func NewPlayer() *Player {
 
 	var player Player
 	player.Board = NewBoard(5, 5)
-	PlayersList <- &player
+	PlayersChan <- &player
 
 	return &player
 }

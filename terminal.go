@@ -24,8 +24,9 @@ func init() {
 	termbox.Sync()
 }
 
-func PrintText(text string, p Position) {
+func PrintText(value interface{}, p Position) {
 
+	text := fmt.Sprintf("%v", value)
 	for i, char := range text {
 		termbox.SetCell(p.X+i, p.Y, char, termbox.ColorWhite, termbox.ColorBlack)
 	}
@@ -37,8 +38,10 @@ func HandleTerminal() {
 	defer fmt.Println("Bye bye !")
 	defer termbox.Close()
 
-	for range TerminalEvent {
-
-		termbox.Flush()
+	for Running {
+		select {
+		case <-TerminalEvent:
+			termbox.Flush()
+		}
 	}
 }

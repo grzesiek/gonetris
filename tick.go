@@ -5,7 +5,8 @@ import (
 )
 
 var (
-	Tick time.Duration
+	Tick     time.Duration
+	TickChan = make(chan bool)
 )
 
 func init() {
@@ -18,7 +19,7 @@ func HandleTick() {
 
 	for Running {
 		if !Paused {
-			BoardEvent <- BrickMoveDown
+			TickChan <- true
 		}
 
 		time.Sleep(Tick)
