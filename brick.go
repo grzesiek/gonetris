@@ -131,8 +131,13 @@ func (b *Brick) Drop() {
 
 func HandleBrick() {
 
-	for event := range BrickEvent {
-		brick := MyPlayer.Board.Brick
+	/* Wait for brick, as when we have brick, we can execute the brick actions */
+	brick := <-BrickChan
+
+	select {
+	case brick = <-BrickChan: /* New brick appeared */
+	case <-TickChan: /* Game tick - move brick down */
+	case <-BrickOperation: /* Player want to modify brick - move, rotate, drop ... */
 	}
 
 }
