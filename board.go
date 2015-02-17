@@ -3,11 +3,13 @@ package main
 import (
 	"github.com/nsf/termbox-go"
 	"math/rand"
+	"reflect"
 	"time"
 )
 
 var (
-	BoardEvent = make(chan bool)
+	BoardEvent     = make(chan bool)
+	BrickOperation = make(chan string)
 )
 
 type BoardCell struct {
@@ -30,7 +32,7 @@ const (
 	BorderBottom
 )
 
-func (b *Board) Draw() {
+func (b Board) Draw() {
 
 	for row, cells := range b.Matrix {
 		for col, cell := range cells {
@@ -40,7 +42,7 @@ func (b *Board) Draw() {
 	}
 }
 
-func (b *Board) DrawFrame() {
+func (b Board) DrawFrame() {
 
 	width, height := len(b.Matrix), len(b.Matrix[0])
 	x, y := b.Position.X, b.Position.Y
@@ -149,12 +151,9 @@ func (board *Board) NextBrick() *Brick {
 	rand.Seed(time.Now().UTC().UnixNano())
 	brick := &Bricks[rand.Intn(7)]
 	brick.Position = Position{0, 0}
-
-	/* Board and brick are interrelated pair*/
-	brick.Board = board
 	board.Brick = brick
+	brick.Board = board
 
-	BrickChan <- brick
 	return brick
 }
 
@@ -172,7 +171,7 @@ func NewBoard(x, y int) *Board {
 		}
 	}
 
-	board.DrawFrame()
+	TerminalNewBoardEvent <- board
 
 	return &board
 }
@@ -181,18 +180,30 @@ func HandleBoard() {
 
 	defer Wg.Done()
 
+	/* First player is my player*/
 	player := <-PlayersChan
 	board := player.Board
+
+	/* Create first brick */
 	board.NextBrick()
 
-	for range BoardEvent {
+	for Running {
+
+		select {
+		case <-TickChan:
+			/* Game tick - move brick down */
+			board.Brick.MoveDown()
+		case method := <-BrickOperation:
+			/* Player wants to modify brick - move, rotate, drop ... by reflection */
+			reflect.ValueOf(board.Brick).MethodByName(method).Call([]reflect.Value{})
+		}
 
 		/* Reset empty cells (not filled) */
 		board.ResetEmptyCells()
 		/* Draw current brick board */
 		board.DrawBrick()
 
-		PlayerEvent <- player
-		TerminalEvent <- true
+		/* Draw board */
+		TerminalBoardEvent <- *board
 	}
 }

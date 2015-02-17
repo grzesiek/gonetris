@@ -11,7 +11,8 @@ type Position struct {
 }
 
 var (
-	TerminalEvent = make(chan bool)
+	TerminalNewBoardEvent = make(chan Board)
+	TerminalBoardEvent    = make(chan Board)
 )
 
 func init() {
@@ -38,10 +39,14 @@ func HandleTerminal() {
 	defer fmt.Println("Bye bye !")
 	defer termbox.Close()
 
-	for Running {
+	for {
 		select {
-		case <-TerminalEvent:
-			termbox.Flush()
+		case board := <-TerminalNewBoardEvent:
+			board.DrawFrame()
+		case board := <-TerminalBoardEvent:
+			board.Draw()
 		}
+
+		termbox.Flush()
 	}
 }

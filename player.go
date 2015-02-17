@@ -30,13 +30,8 @@ func NewPlayer() *Player {
 
 func HandlePlayers() {
 
-	MyPlayer = NewPlayer()
-	Players = append(Players, MyPlayer)
 	defer Wg.Done()
 
-	for player := range PlayerEvent {
-
-		player.Board.Draw()
-	}
-
+	MyPlayer = NewPlayer()
+	Players = append(Players, MyPlayer)
 }

@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/nsf/termbox-go"
-	"reflect"
 )
 
 type Brick struct {
@@ -13,9 +12,7 @@ type Brick struct {
 }
 
 var (
-	Bricks         [7]Brick
-	BrickChan      = make(chan *Brick)
-	BrickOperation = make(chan string)
+	Bricks [7]Brick
 )
 
 func init() {
@@ -74,48 +71,48 @@ func init() {
 
 }
 
-func (b *Brick) MoveLeft() {
-	if !b.Board.BrickTouched(BorderLeft, true) {
-		b.Position.X -= 2
+func (brick *Brick) MoveLeft() {
+	if !brick.Board.BrickTouched(BorderLeft, true) {
+		brick.Position.X -= 2
 	}
 }
 
-func (b *Brick) MoveRight() {
-	if !b.Board.BrickTouched(BorderRight, true) {
-		b.Position.X += 2
+func (brick *Brick) MoveRight() {
+	if !brick.Board.BrickTouched(BorderRight, true) {
+		brick.Position.X += 2
 	}
 }
 
-func (b *Brick) MoveDown() {
+func (brick *Brick) MoveDown() {
 	/* Check if bricked touch something */
-	if b.Board.BrickTouched(BorderBottom, false) {
+	if brick.Board.BrickTouched(BorderBottom, false) {
 		/* Fill with current brick*/
-		b.Board.FillWithBrick()
+		brick.Board.FillWithBrick()
 		/* Chose next brick */
-		b.Board.NextBrick()
+		brick.Board.NextBrick()
 	} else {
-		b.Position.Y += 1
+		brick.Position.Y += 1
 	}
 }
 
-func (b *Brick) Rotate() {
+func (brick *Brick) Rotate() {
 
-	if !b.Board.BrickTouched(BorderLeft|BorderRight, true) {
+	if !brick.Board.BrickTouched(BorderLeft|BorderRight, true) {
 
 		/* Transpose matrix */
-		transposed := make([][]int, len(b.Layout[0]))
+		transposed := make([][]int, len(brick.Layout[0]))
 		for c, _ := range transposed {
-			transposed[c] = make([]int, len(b.Layout))
+			transposed[c] = make([]int, len(brick.Layout))
 		}
-		for x, cells := range b.Layout {
+		for x, cells := range brick.Layout {
 			for y, cell := range cells {
 				transposed[y][x] = cell
 			}
 		}
 
-		newLayout := make([][]int, len(b.Layout[0]))
+		newLayout := make([][]int, len(brick.Layout[0]))
 		for c, _ := range newLayout {
-			newLayout[c] = make([]int, len(b.Layout))
+			newLayout[c] = make([]int, len(brick.Layout))
 		}
 
 		/* Change columns to rotate right */
@@ -125,32 +122,9 @@ func (b *Brick) Rotate() {
 			}
 		}
 
-		b.Layout = newLayout
+		brick.Layout = newLayout
 	}
 }
 
-func (b *Brick) Drop() {
-}
-
-func HandleBrick() {
-
-	/* Wait for brick, as when we have brick, we can execute the brick actions */
-	brick := <-BrickChan
-	defer Wg.Done()
-
-	for Running {
-		select {
-		case brick = <-BrickChan:
-			/* New brick appeared */
-		case <-TickChan:
-			/* Game tick - move brick down */
-			brick.MoveDown()
-		case method := <-BrickOperation:
-			/* Player want to modify brick - move, rotate, drop ... by reflection */
-			reflect.ValueOf(brick).MethodByName(method).Call([]reflect.Value{})
-		}
-
-		BoardEvent <- true
-	}
-
+func (brick *Brick) Drop() {
 }

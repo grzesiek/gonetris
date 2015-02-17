@@ -32,7 +32,6 @@ func main() {
 	go HandleTerminal()
 	go HandleKeys()
 	go HandlePlayers()
-	go HandleBrick()
 	go HandleBoard()
 	go HandleTick()
 
