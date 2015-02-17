@@ -104,23 +104,32 @@ func (board *Board) BrickTouched(blocker BoardBlocker) bool {
 		for by, cell := range cells {
 			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
 			if cell == 1 {
-				/* Touched right border */
-				if blocker&BorderRight != 0 && x+1 == len(board.Matrix)-1 {
-					return true
+
+				if blocker&BorderRight != 0 {
+					/* Touched right border */
+					if x+1 == len(board.Matrix)-1 {
+						return true
+					}
 				}
-				/* Touched left border */
-				if BorderLeft&blocker != 0 && x == 0 {
-					return true
+				if BorderLeft&blocker != 0 {
+					/* Touched left border */
+					if x == 0 {
+						return true
+					}
 				}
-				/* Touched bottom border */
-				if blocker&BorderBottom != 0 && len(board.Matrix) == y+1 {
-					return true
+				if blocker&BorderBottom != 0 {
+					/* Touched bottom border */
+					if len(board.Matrix) == y+1 {
+						return true
+					}
 				}
-				/* Touched other brick, that already filled board at the bottom */
-				if blocker&BrickBelow != 0 && y+1 < len(board.Matrix) && board.Matrix[x][y+1].Filled {
-					return true
+				if blocker&BrickBelow != 0 {
+					/* Touched other brick, that already filled board at the bottom */
+					if y+1 < len(board.Matrix) && board.Matrix[x][y+1].Filled {
+						return true
+					}
 				}
-				/* Check this only if we are moving horizontally */
+				/* Check below conditions only if we are moving horizontally */
 				if blocker&BrickAtLeft != 0 {
 					/* Touched other brick, that already filled board at left */
 					if x > 2 && board.Matrix[x-2][y].Filled {
@@ -133,6 +142,7 @@ func (board *Board) BrickTouched(blocker BoardBlocker) bool {
 						return true
 					}
 				}
+
 			}
 		}
 	}
