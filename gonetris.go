@@ -11,10 +11,8 @@ var opts struct {
 }
 
 var (
-	RunningChan = make(chan bool)
-	Running     = true
-	Paused      = false
-	Wg          sync.WaitGroup
+	GameClose = make(chan bool)
+	Wg        sync.WaitGroup
 )
 
 func init() {
@@ -35,6 +33,10 @@ func main() {
 	go HandleBoard()
 	go HandleTick()
 
-	Running = <-RunningChan
+	<-GameClose
+	TerminalClose <- true
+	BoardClose <- true
+	TickClose <- true
+
 	Wg.Wait()
 }

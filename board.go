@@ -10,6 +10,7 @@ import (
 var (
 	BoardEvent     = make(chan bool)
 	BrickOperation = make(chan string)
+	BoardClose     = make(chan bool)
 )
 
 type BoardCell struct {
@@ -187,7 +188,7 @@ func HandleBoard() {
 	/* Create first brick */
 	board.NextBrick()
 
-	for Running {
+	for {
 
 		select {
 		case <-TickChan:
@@ -196,6 +197,8 @@ func HandleBoard() {
 		case method := <-BrickOperation:
 			/* Player wants to modify brick - move, rotate, drop ... by reflection */
 			reflect.ValueOf(board.Brick).MethodByName(method).Call([]reflect.Value{})
+		case <-BoardClose:
+			return
 		}
 
 		/* Reset empty cells (not filled) */

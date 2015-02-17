@@ -5,23 +5,26 @@ import (
 )
 
 var (
-	Tick     time.Duration
-	TickChan = make(chan bool)
+	tick      time.Duration
+	TickChan  = make(chan bool)
+	TickClose = make(chan bool)
 )
 
 func init() {
-	Tick = 200 * time.Millisecond
+	tick = 200 * time.Millisecond
 }
 
 func HandleTick() {
 
 	defer Wg.Done()
 
-	for Running {
-		if !Paused {
+	for {
+		select {
+		case <-TickClose:
+			return
+		default:
 			TickChan <- true
+			time.Sleep(tick)
 		}
-
-		time.Sleep(Tick)
 	}
 }

@@ -13,6 +13,7 @@ type Position struct {
 var (
 	TerminalNewBoardEvent = make(chan Board)
 	TerminalBoardEvent    = make(chan Board)
+	TerminalClose         = make(chan bool)
 )
 
 func init() {
@@ -45,6 +46,8 @@ func HandleTerminal() {
 			board.DrawFrame()
 		case board := <-TerminalBoardEvent:
 			board.Draw()
+		case <-TerminalClose:
+			return
 		}
 
 		termbox.Flush()
