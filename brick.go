@@ -72,20 +72,20 @@ func init() {
 }
 
 func (brick *Brick) MoveLeft() {
-	if !brick.Board.BrickTouched(BorderLeft, true) {
+	if !brick.Board.BrickTouched(BorderLeft | BrickAtLeft) {
 		brick.Position.X -= 2
 	}
 }
 
 func (brick *Brick) MoveRight() {
-	if !brick.Board.BrickTouched(BorderRight, true) {
+	if !brick.Board.BrickTouched(BorderRight | BrickAtRight) {
 		brick.Position.X += 2
 	}
 }
 
 func (brick *Brick) MoveDown() {
 	/* Check if bricked touch something */
-	if brick.Board.BrickTouched(BorderBottom, false) {
+	if brick.Board.BrickTouched(BorderBottom | BrickBelow) {
 		/* Fill with current brick*/
 		brick.Board.FillWithBrick()
 		/* Chose next brick */
@@ -97,7 +97,7 @@ func (brick *Brick) MoveDown() {
 
 func (brick *Brick) Rotate() {
 
-	if !brick.Board.BrickTouched(BorderLeft|BorderRight, true) {
+	if !brick.Board.BrickTouched(BorderLeft | BorderRight) {
 
 		/* Transpose matrix */
 		transposed := make([][]int, len(brick.Layout[0]))

@@ -10,7 +10,6 @@ type Player struct {
 
 var (
 	Players     []*Player
-	MyPlayer    *Player
 	PlayersChan = make(chan *Player)
 	PlayerEvent = make(chan *Player)
 )
@@ -19,7 +18,7 @@ func init() {
 	Players = make([]*Player, 0, opts.Players)
 }
 
-func NewPlayer() *Player {
+func newPlayer() *Player {
 
 	var player Player
 	player.Board = NewBoard(5, 5)
@@ -31,7 +30,5 @@ func NewPlayer() *Player {
 func HandlePlayers() {
 
 	defer Wg.Done()
-
-	MyPlayer = NewPlayer()
-	Players = append(Players, MyPlayer)
+	Players = append(Players, newPlayer())
 }

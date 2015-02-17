@@ -24,13 +24,16 @@ type Board struct {
 	Brick    *Brick
 }
 
-type BoardBorder uint16
+type BoardBlocker uint16
 
 const (
-	BorderLeft BoardBorder = iota
+	BorderLeft BoardBlocker = 1 << iota
 	BorderRight
 	BorderTop
 	BorderBottom
+	BrickAtLeft
+	BrickAtRight
+	BrickBelow
 )
 
 func (b Board) Draw() {
@@ -94,7 +97,7 @@ func (b *Board) DrawBrick() {
 
 }
 
-func (board *Board) BrickTouched(border BoardBorder, move bool) bool {
+func (board *Board) BrickTouched(blocker BoardBlocker) bool {
 
 	brick := board.Brick
 	for bx, cells := range brick.Layout {
@@ -102,26 +105,29 @@ func (board *Board) BrickTouched(border BoardBorder, move bool) bool {
 			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
 			if cell == 1 {
 				/* Touched right border */
-				if border == BorderRight && x+1 == len(board.Matrix)-1 {
+				if blocker&BorderRight != 0 && x+1 == len(board.Matrix)-1 {
 					return true
 				}
 				/* Touched left border */
-				if border == BorderLeft && x == 0 {
+				if BorderLeft&blocker != 0 && x == 0 {
 					return true
 				}
 				/* Touched bottom border */
-				if border == BorderBottom && len(board.Matrix) == y+1 {
+				if blocker&BorderBottom != 0 && len(board.Matrix) == y+1 {
 					return true
 				}
 				/* Touched other brick, that already filled board at the bottom */
-				if y+1 < len(board.Matrix) && board.Matrix[x][y+1].Filled {
+				if blocker&BrickBelow != 0 && y+1 < len(board.Matrix) && board.Matrix[x][y+1].Filled {
 					return true
 				}
-				if move { /* Check this only if we are moving brick */
+				/* Check this only if we are moving horizontally */
+				if blocker&BrickAtLeft != 0 {
 					/* Touched other brick, that already filled board at left */
 					if x > 2 && board.Matrix[x-2][y].Filled {
 						return true
 					}
+				}
+				if blocker&BrickAtRight != 0 {
 					/* Touched other brick, that already filled board at right */
 					if x+2 < len(board.Matrix) && board.Matrix[x+2][y].Filled {
 						return true
@@ -173,7 +179,6 @@ func NewBoard(x, y int) *Board {
 	}
 
 	TerminalNewBoardEvent <- board
-
 	return &board
 }
 
