@@ -2,15 +2,13 @@ package main
 
 import (
 	"github.com/nsf/termbox-go"
-	"math/rand"
 	"reflect"
-	"time"
 )
 
 var (
-	BoardEvent     = make(chan bool)
-	BrickOperation = make(chan string)
-	BoardClose     = make(chan bool)
+	BoardEvent          = make(chan bool)
+	BoardBrickOperation = make(chan string)
+	BoardClose          = make(chan bool)
 )
 
 type BoardCell struct {
@@ -78,102 +76,6 @@ func (b *Board) ResetEmptyCells() {
 	}
 }
 
-func (b *Board) DrawBrick() {
-
-	brick := b.Brick
-	for bx, cells := range brick.Layout {
-		for by, cell := range cells {
-			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
-			if cell == 1 {
-				b.Matrix[x][y].Char.Ch = '['
-				b.Matrix[x+1][y].Char.Ch = ']'
-				b.Matrix[x][y].Char.Bg = brick.Color
-				b.Matrix[x+1][y].Char.Bg = brick.Color
-				b.Matrix[x][y].Char.Fg = termbox.ColorBlack
-				b.Matrix[x+1][y].Char.Fg = termbox.ColorBlack
-			}
-		}
-	}
-
-}
-
-func (board *Board) BrickTouched(blocker BoardBlocker) bool {
-
-	brick := board.Brick
-	for bx, cells := range brick.Layout {
-		for by, cell := range cells {
-			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
-			if cell == 1 {
-
-				if blocker&BorderRight != 0 {
-					/* Touched right border */
-					if x+1 == len(board.Matrix)-1 {
-						return true
-					}
-				}
-				if BorderLeft&blocker != 0 {
-					/* Touched left border */
-					if x == 0 {
-						return true
-					}
-				}
-				if blocker&BorderBottom != 0 {
-					/* Touched bottom border */
-					if len(board.Matrix) == y+1 {
-						return true
-					}
-				}
-				if blocker&BrickBelow != 0 {
-					/* Touched other brick, that already filled board at the bottom */
-					if y+1 < len(board.Matrix) && board.Matrix[x][y+1].Filled {
-						return true
-					}
-				}
-				/* Check below conditions only if we are moving horizontally */
-				if blocker&BrickAtLeft != 0 {
-					/* Touched other brick, that already filled board at left */
-					if x > 2 && board.Matrix[x-2][y].Filled {
-						return true
-					}
-				}
-				if blocker&BrickAtRight != 0 {
-					/* Touched other brick, that already filled board at right */
-					if x+2 < len(board.Matrix) && board.Matrix[x+2][y].Filled {
-						return true
-					}
-				}
-
-			}
-		}
-	}
-
-	return false
-}
-
-func (board *Board) FillWithBrick() {
-
-	brick := board.Brick
-	for bx, cells := range brick.Layout {
-		for by, cell := range cells {
-			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
-			if cell == 1 {
-				board.Matrix[x][y].Filled = true
-				board.Matrix[x+1][y].Filled = true
-			}
-		}
-	}
-}
-
-func (board *Board) NextBrick() *Brick {
-	rand.Seed(time.Now().UTC().UnixNano())
-	brick := &Bricks[rand.Intn(7)]
-	brick.Position = Position{0, 0}
-	board.Brick = brick
-	brick.Board = board
-
-	return brick
-}
-
 func NewBoard(x, y int) *Board {
 
 	var board Board
@@ -201,7 +103,7 @@ func HandleBoard() {
 	board := player.Board
 
 	/* Create first brick */
-	board.NextBrick()
+	board.BrickNext()
 
 	for {
 
@@ -209,9 +111,9 @@ func HandleBoard() {
 		case <-TickChan:
 			/* Game tick - move brick down */
 			board.Brick.MoveDown()
-		case method := <-BrickOperation:
+		case method := <-BoardBrickOperation:
 			/* Player wants to modify brick - move, rotate, drop ... by reflection */
-			reflect.ValueOf(board.Brick).MethodByName(method).Call([]reflect.Value{})
+			reflect.ValueOf(board).MethodByName(method).Call([]reflect.Value{})
 		case <-BoardClose:
 			return
 		}
@@ -219,7 +121,14 @@ func HandleBoard() {
 		/* Reset empty cells (not filled) */
 		board.ResetEmptyCells()
 		/* Draw current brick board */
-		board.DrawBrick()
+		board.BrickDraw()
+
+		if board.NeedsNextBrick() {
+			/* Fill with current brick*/
+			board.FillWithBrick()
+			/* Chose next brick */
+			board.BrickNext()
+		}
 
 		/* Draw board */
 		TerminalBoardEvent <- *board

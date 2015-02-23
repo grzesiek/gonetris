@@ -19,11 +19,11 @@ func HandleKeys() {
 				GameClose <- true
 				return
 			case 'j': /*	Move brick left */
-				BrickOperation <- "MoveLeft"
+				BoardBrickOperation <- "BrickMoveLeft"
 			case 'l': /*	Move brick right */
-				BrickOperation <- "MoveRight"
+				BoardBrickOperation <- "BrickMoveRight"
 			case 'k': /*  Rotate brick */
-				BrickOperation <- "Rotate"
+				BoardBrickOperation <- "BrickRotate"
 			}
 		}
 	}
