@@ -3,7 +3,6 @@ package main
 import (
 	"github.com/jessevdk/go-flags"
 	"sync"
-	"time"
 )
 
 var opts struct {
@@ -12,10 +11,8 @@ var opts struct {
 }
 
 var (
-	Running = true
-	Paused  = false
-	Tick    time.Duration
-	Wg      sync.WaitGroup
+	GameClose = make(chan bool)
+	Wg        sync.WaitGroup
 )
 
 func init() {
@@ -24,23 +21,22 @@ func init() {
 	if err != nil {
 		panic("Invalid flags !")
 	}
-
 }
 
 func main() {
 
-	Wg.Add(4)
+	Wg.Add(5)
 
 	go HandleTerminal()
-	go HandleBoards()
 	go HandleKeys()
-	go HandleGame()
+	go HandlePlayers()
+	go HandleBoard()
+	go HandleTick()
+
+	<-GameClose
+	TerminalClose <- true
+	BoardClose <- true
+	TickClose <- true
 
 	Wg.Wait()
-}
-
-func Quit() {
-	Running = false
-	close(BoardEvent)
-	close(TerminalEvent)
 }

@@ -4,25 +4,26 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
+var ()
+
 func HandleKeys() {
 
 	defer Wg.Done()
 
-	for Running {
-
+	for {
 		if event := termbox.PollEvent(); event.Type == termbox.EventKey {
 
 			switch event.Ch {
 			case 'p': /*	Pause  					 */
-				Paused = true
 			case 'q': /*	Quit						 */
-				Quit()
+				GameClose <- true
+				return
 			case 'j': /*	Move brick left */
-				BoardEvent <- BrickMoveLeft
+				BoardBrickOperation <- "BrickMoveLeft"
 			case 'l': /*	Move brick right */
-				BoardEvent <- BrickMoveRight
+				BoardBrickOperation <- "BrickMoveRight"
 			case 'k': /*  Rotate brick */
-				BoardEvent <- BrickRotate
+				BoardBrickOperation <- "BrickRotate"
 			}
 		}
 	}

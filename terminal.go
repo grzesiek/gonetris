@@ -11,7 +11,9 @@ type Position struct {
 }
 
 var (
-	TerminalEvent = make(chan bool)
+	TerminalNewBoardEvent = make(chan Board)
+	TerminalBoardEvent    = make(chan Board)
+	TerminalClose         = make(chan bool)
 )
 
 func init() {
@@ -24,8 +26,9 @@ func init() {
 	termbox.Sync()
 }
 
-func PrintText(text string, p Position) {
+func PrintText(value interface{}, p Position) {
 
+	text := fmt.Sprintf("%v", value)
 	for i, char := range text {
 		termbox.SetCell(p.X+i, p.Y, char, termbox.ColorWhite, termbox.ColorBlack)
 	}
@@ -37,7 +40,15 @@ func HandleTerminal() {
 	defer fmt.Println("Bye bye !")
 	defer termbox.Close()
 
-	for range TerminalEvent {
+	for {
+		select {
+		case board := <-TerminalNewBoardEvent:
+			board.DrawFrame()
+		case board := <-TerminalBoardEvent:
+			board.Draw()
+		case <-TerminalClose:
+			return
+		}
 
 		termbox.Flush()
 	}

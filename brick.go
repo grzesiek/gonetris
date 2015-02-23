@@ -11,15 +11,6 @@ type Brick struct {
 	Board    *Board
 }
 
-type Event uint16
-
-const (
-	BrickMoveDown Event = iota
-	BrickMoveLeft
-	BrickMoveRight
-	BrickRotate
-)
-
 var (
 	Bricks [7]Brick
 )
@@ -80,60 +71,45 @@ func init() {
 
 }
 
-func (b *Brick) MoveLeft() {
-	if !b.Board.BrickTouched(BorderLeft, true) {
-		b.Position.X -= 2
-	}
+func (brick *Brick) MoveLeft() {
+	brick.Position.X -= 2
 }
 
-func (b *Brick) MoveRight() {
-	if !b.Board.BrickTouched(BorderRight, true) {
-		b.Position.X += 2
-	}
+func (brick *Brick) MoveRight() {
+	brick.Position.X += 2
 }
 
-func (b *Brick) MoveDown() {
-	/* Check if bricked touch something */
-	if b.Board.BrickTouched(BorderBottom, false) {
-		/* Fill with current brick*/
-		b.Board.FillWithBrick()
-		/* Chose next brick */
-		b.Board.NextBrick()
-	} else {
-		b.Position.Y += 1
-	}
+func (brick *Brick) MoveDown() {
+	brick.Position.Y += 1
 }
 
-func (b *Brick) Rotate() {
+func (brick *Brick) Rotate() {
 
-	if !b.Board.BrickTouched(BorderLeft|BorderRight, true) {
-
-		/* Transpose matrix */
-		transposed := make([][]int, len(b.Layout[0]))
-		for c, _ := range transposed {
-			transposed[c] = make([]int, len(b.Layout))
-		}
-		for x, cells := range b.Layout {
-			for y, cell := range cells {
-				transposed[y][x] = cell
-			}
-		}
-
-		newLayout := make([][]int, len(b.Layout[0]))
-		for c, _ := range newLayout {
-			newLayout[c] = make([]int, len(b.Layout))
-		}
-
-		/* Change columns to rotate right */
-		for x, cells := range transposed {
-			for y, cell := range cells {
-				newLayout[x][(len(cells)-1)-y] = cell
-			}
-		}
-
-		b.Layout = newLayout
+	/* Transpose matrix */
+	transposed := make([][]int, len(brick.Layout[0]))
+	for c, _ := range transposed {
+		transposed[c] = make([]int, len(brick.Layout))
 	}
+	for x, cells := range brick.Layout {
+		for y, cell := range cells {
+			transposed[y][x] = cell
+		}
+	}
+
+	newLayout := make([][]int, len(brick.Layout[0]))
+	for c, _ := range newLayout {
+		newLayout[c] = make([]int, len(brick.Layout))
+	}
+
+	/* Change columns to rotate right */
+	for x, cells := range transposed {
+		for y, cell := range cells {
+			newLayout[x][(len(cells)-1)-y] = cell
+		}
+	}
+
+	brick.Layout = newLayout
 }
 
-func (b *Brick) Drop() {
+func (brick *Brick) Drop() {
 }

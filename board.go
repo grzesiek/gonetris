@@ -2,12 +2,13 @@ package main
 
 import (
 	"github.com/nsf/termbox-go"
-	"math/rand"
-	"time"
+	"reflect"
 )
 
 var (
-	BoardEvent = make(chan Event)
+	BoardEvent          = make(chan bool)
+	BoardBrickOperation = make(chan string)
+	BoardClose          = make(chan bool)
 )
 
 type BoardCell struct {
@@ -21,16 +22,19 @@ type Board struct {
 	Brick    *Brick
 }
 
-type BorderType uint16
+type BoardBlocker uint16
 
 const (
-	BorderLeft BorderType = iota
+	BorderLeft BoardBlocker = 1 << iota
 	BorderRight
 	BorderTop
 	BorderBottom
+	BrickAtLeft
+	BrickAtRight
+	BrickBelow
 )
 
-func (b *Board) Draw() {
+func (b Board) Draw() {
 
 	for row, cells := range b.Matrix {
 		for col, cell := range cells {
@@ -40,7 +44,7 @@ func (b *Board) Draw() {
 	}
 }
 
-func (b *Board) DrawFrame() {
+func (b Board) DrawFrame() {
 
 	width, height := len(b.Matrix), len(b.Matrix[0])
 	x, y := b.Position.X, b.Position.Y
@@ -72,92 +76,6 @@ func (b *Board) ResetEmptyCells() {
 	}
 }
 
-func (b *Board) DrawBrick() {
-
-	brick := b.Brick
-	for bx, cells := range brick.Layout {
-		for by, cell := range cells {
-			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
-			if cell == 1 {
-				b.Matrix[x][y].Char.Ch = '['
-				b.Matrix[x+1][y].Char.Ch = ']'
-				b.Matrix[x][y].Char.Bg = brick.Color
-				b.Matrix[x+1][y].Char.Bg = brick.Color
-				b.Matrix[x][y].Char.Fg = termbox.ColorBlack
-				b.Matrix[x+1][y].Char.Fg = termbox.ColorBlack
-			}
-		}
-	}
-
-}
-
-func (board *Board) MoveBrickDown() {
-	board.Brick.MoveDown()
-}
-
-func (board *Board) BrickTouched(border BorderType, move bool) bool {
-
-	brick := board.Brick
-	for bx, cells := range brick.Layout {
-		for by, cell := range cells {
-			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
-			if cell == 1 {
-				/* Touched right border */
-				if border == BorderRight && x+1 == len(board.Matrix)-1 {
-					return true
-				}
-				/* Touched left border */
-				if border == BorderLeft && x == 0 {
-					return true
-				}
-				/* Touched bottom border */
-				if border == BorderBottom && len(board.Matrix) == y+1 {
-					return true
-				}
-				/* Touched other brick, that already filled board at the bottom */
-				if y+1 < len(board.Matrix) && board.Matrix[x][y+1].Filled {
-					return true
-				}
-				if move { /* Check this only if we are moving brick */
-					/* Touched other brick, that already filled board at left */
-					if x > 2 && board.Matrix[x-2][y].Filled {
-						return true
-					}
-					/* Touched other brick, that already filled board at right */
-					if x+2 < len(board.Matrix) && board.Matrix[x+2][y].Filled {
-						return true
-					}
-				}
-			}
-		}
-	}
-
-	return false
-}
-
-func (board *Board) FillWithBrick() {
-
-	brick := board.Brick
-	for bx, cells := range brick.Layout {
-		for by, cell := range cells {
-			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
-			if cell == 1 {
-				board.Matrix[x][y].Filled = true
-				board.Matrix[x+1][y].Filled = true
-			}
-		}
-	}
-}
-
-func (board *Board) NextBrick() *Brick {
-	rand.Seed(time.Now().UTC().UnixNano())
-	board.Brick = &Bricks[rand.Intn(7)]
-	board.Brick.Position = Position{0, 0}
-	/* Board and brick are interrelated pair*/
-	board.Brick.Board = board
-	return board.Brick
-}
-
 func NewBoard(x, y int) *Board {
 
 	var board Board
@@ -172,40 +90,47 @@ func NewBoard(x, y int) *Board {
 		}
 	}
 
-	board.DrawFrame()
-
+	TerminalNewBoardEvent <- board
 	return &board
 }
 
-func HandleBoards() {
+func HandleBoard() {
 
 	defer Wg.Done()
-	player := <-PlayerChan
+
+	/* First player is my player*/
+	player := <-PlayersChan
 	board := player.Board
-	board.NextBrick()
 
-	for event := range BoardEvent {
+	/* Create first brick */
+	board.BrickNext()
 
-		switch event {
-		case BrickMoveDown:
+	for {
+
+		select {
+		case <-TickChan:
+			/* Game tick - move brick down */
 			board.Brick.MoveDown()
-		case BrickMoveLeft:
-			board.Brick.MoveLeft()
-		case BrickMoveRight:
-			board.Brick.MoveRight()
-		case BrickRotate:
-			board.Brick.Rotate()
+		case method := <-BoardBrickOperation:
+			/* Player wants to modify brick - move, rotate, drop ... by reflection */
+			reflect.ValueOf(board).MethodByName(method).Call([]reflect.Value{})
+		case <-BoardClose:
+			return
 		}
 
 		/* Reset empty cells (not filled) */
 		board.ResetEmptyCells()
-		/* Draw current brick on MyPlayer's board */
-		board.DrawBrick()
+		/* Draw current brick board */
+		board.BrickDraw()
 
-		for _, p := range Players {
-			p.Board.Draw()
+		if board.NeedsNextBrick() {
+			/* Fill with current brick*/
+			board.FillWithBrick()
+			/* Chose next brick */
+			board.BrickNext()
 		}
 
-		TerminalEvent <- true
+		/* Draw board */
+		TerminalBoardEvent <- *board
 	}
 }
