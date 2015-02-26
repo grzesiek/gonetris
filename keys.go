@@ -24,6 +24,8 @@ func HandleKeys() {
 				BoardBrickOperation <- "BrickMoveRight"
 			case 'k': /*  Rotate brick */
 				BoardBrickOperation <- "BrickRotate"
+			case 'm': /*  Move down brick */
+				BoardBrickOperation <- "BrickMoveDown"
 			}
 		}
 	}

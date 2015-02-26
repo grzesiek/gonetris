@@ -6,12 +6,11 @@ import (
 
 var (
 	tick      time.Duration
-	TickChan  = make(chan bool)
 	TickClose = make(chan bool)
 )
 
 func init() {
-	tick = 200 * time.Millisecond
+	tick = 500 * time.Millisecond
 }
 
 func HandleTick() {
@@ -23,7 +22,7 @@ func HandleTick() {
 		case <-TickClose:
 			return
 		default:
-			TickChan <- true
+			BoardBrickOperation <- "BrickMoveDown"
 			time.Sleep(tick)
 		}
 	}

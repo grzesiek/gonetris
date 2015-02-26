@@ -108,11 +108,9 @@ func HandleBoard() {
 	for {
 
 		select {
-		case <-TickChan:
-			/* Game tick - move brick down */
-			board.Brick.MoveDown()
 		case method := <-BoardBrickOperation:
 			/* Player wants to modify brick - move, rotate, drop ... by reflection */
+			/* This also handles moving down bick on tick */
 			reflect.ValueOf(board).MethodByName(method).Call([]reflect.Value{})
 		case <-BoardClose:
 			return
@@ -123,7 +121,8 @@ func HandleBoard() {
 		/* Draw current brick board */
 		board.BrickDraw()
 
-		if board.NeedsNextBrick() {
+		/* User can move birck one last time after it touches something */
+		if touched, anchored := board.NeedsNextBrick(); touched && anchored {
 			/* Fill with current brick*/
 			board.FillWithBrick()
 			/* Chose next brick */

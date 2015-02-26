@@ -9,6 +9,7 @@ type Brick struct {
 	Layout   [][]int
 	Color    termbox.Attribute
 	Board    *Board
+	Anchored bool
 }
 
 var (
