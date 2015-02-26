@@ -5,11 +5,11 @@ import (
 )
 
 type Brick struct {
-	Position Position
 	Layout   [][]int
 	Color    termbox.Attribute
 	Board    *Board
 	Anchored bool
+	Position Position
 }
 
 var (
@@ -18,23 +18,27 @@ var (
 
 func init() {
 
+	/* 2 - center of the brick */
+
 	IBrick := Brick{
 		Color: termbox.ColorBlue,
 		Layout: [][]int{
-			{1},
-			{1},
-			{1},
-			{1}}}
+			{0, 1, 0},
+			{0, 1, 0},
+			{0, 1, 0},
+			{0, 1, 0}}}
 
 	JBrick := Brick{
 		Color: termbox.ColorCyan,
 		Layout: [][]int{
+			{0, 0, 0},
 			{1, 1, 1},
 			{0, 0, 1}}}
 
 	LBrick := Brick{
 		Color: termbox.ColorYellow,
 		Layout: [][]int{
+			{0, 0, 0},
 			{1, 1, 1},
 			{1, 0, 0}}}
 
@@ -53,6 +57,7 @@ func init() {
 	TBrick := Brick{
 		Color: termbox.ColorWhite,
 		Layout: [][]int{
+			{0, 0, 0},
 			{1, 1, 1},
 			{0, 1, 0}}}
 
