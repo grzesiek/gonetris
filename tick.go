@@ -10,7 +10,7 @@ var (
 )
 
 func init() {
-	tick = 500 * time.Millisecond
+	tick = 10000 * time.Millisecond
 }
 
 func HandleTick() {
