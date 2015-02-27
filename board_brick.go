@@ -132,14 +132,21 @@ func (board *Board) BrickRotate() {
 }
 
 func (board *Board) BrickDrop() {
+	PrintText("test", Position{1, 1})
+	for !board.brickTouched(BorderBottom | BrickBelow) {
+		board.BrickMoveDown()
+	}
 }
 
-func (board *Board) NeedsNextBrick() (touched, anchored bool) {
+func (board *Board) NeedsNextBrick() bool {
+
 	/* Brick becomes anchored once it touches something below at the first time */
-	touched = board.brickTouched(BorderBottom | BrickBelow)
-	anchored = board.Brick.Anchored
+	/* User can move birck one last time after it touches something */
+
+	touched := board.brickTouched(BorderBottom | BrickBelow)
+	anchored := board.Brick.Anchored
 	if touched {
 		board.Brick.Anchored = true
 	}
-	return
+	return touched && anchored
 }

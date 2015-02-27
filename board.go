@@ -122,7 +122,7 @@ func HandleBoard() {
 		board.BrickDraw()
 
 		/* User can move birck one last time after it touches something */
-		if touched, anchored := board.NeedsNextBrick(); touched && anchored {
+		if board.NeedsNextBrick() {
 			/* Fill with current brick*/
 			board.FillWithBrick()
 			/* Chose next brick */

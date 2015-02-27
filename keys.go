@@ -27,6 +27,12 @@ func HandleKeys() {
 			case 'm': /*  Move down brick */
 				BoardBrickOperation <- "BrickMoveDown"
 			}
+
+			switch event.Key {
+			case termbox.KeySpace: /*  Drop brick */
+				BoardBrickOperation <- "BrickDrop"
+			}
+
 		}
 	}
 }
