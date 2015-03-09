@@ -8,4 +8,4 @@ This game is currently under development. There is no multiplayer support at thi
 
 ## License
 
-This is free software, licensed under MIT License (see LICENSE file)
+This is free software, licensed under GNU GPL license (see LICENSE file)
