@@ -98,6 +98,9 @@ func HandleBoard() {
 			board.FillWithBrick()
 			/* Chose next brick */
 			board.BrickNext()
+
+                        /* Remove full lines */
+                        board.RemoveFullLines()
 		}
 
 		/* Draw board */
