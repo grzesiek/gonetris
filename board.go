@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/nsf/termbox-go"
 	"reflect"
 )
 
@@ -18,7 +17,7 @@ type BoardCell struct {
 }
 
 type Board struct {
-	Matrix   [20][10]BoardCell
+	Matrix   [10][20]BoardCell
 	Position Position
 	Brick    *Brick
 }
@@ -33,38 +32,8 @@ const (
 	BrickAtLeft
 	BrickAtRight
 	BrickBelow
+	Something = 127
 )
-
-func (b Board) Draw() {
-
-	/* TODO
-	for row, cells := range b.Matrix {
-		for col, cell := range cells {
-			x, y := b.Position.X+row, b.Position.Y+col
-			termbox.SetCell(x, y, cell.Char.Ch, cell.Char.Fg, cell.Char.Bg)
-		}
-	}
-	*/
-}
-
-func (b Board) DrawFrame() {
-
-	width, height := len(b.Matrix), len(b.Matrix[0])
-	x, y := b.Position.X, b.Position.Y
-	for i := -1; i <= width; i++ {
-		ch := '-'
-		if i == -1 || i == width {
-			ch = '+'
-		}
-		termbox.SetCell(x+i, y-1, ch, termbox.ColorWhite, termbox.ColorBlack)
-		termbox.SetCell(x+i, y+height, ch, termbox.ColorWhite, termbox.ColorBlack)
-	}
-	for i := 0; i < height; i++ {
-		termbox.SetCell(x-1, y+i, '|', termbox.ColorWhite, termbox.ColorBlack)
-		termbox.SetCell(x+width, y+i, '|', termbox.ColorWhite, termbox.ColorBlack)
-	}
-
-}
 
 func (b *Board) ResetEmptyCells() {
 

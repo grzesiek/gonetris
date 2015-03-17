@@ -30,11 +30,11 @@ func (board *Board) brickTouched(blocker BrickBlocker) bool {
 
 				if blocker&BorderRight != 0 {
 					/* Touched right border */
-					if x+1 == len(board.Matrix)-1 {
+					if len(board.Matrix) == x+1 {
 						return true
 					}
 				}
-				if BorderLeft&blocker != 0 {
+				if blocker&BorderLeft != 0 {
 					/* Touched left border */
 					if x == 0 {
 						return true
@@ -42,13 +42,13 @@ func (board *Board) brickTouched(blocker BrickBlocker) bool {
 				}
 				if blocker&BorderBottom != 0 {
 					/* Touched bottom border */
-					if len(board.Matrix) == y+1 {
+					if len(board.Matrix[0]) == y+1 {
 						return true
 					}
 				}
 				if blocker&BrickBelow != 0 {
 					/* Touched other brick, that already filled board at the bottom */
-					if y+1 < len(board.Matrix) && board.Matrix[x][y+1].Embedded {
+					if y+1 < len(board.Matrix[0]) && board.Matrix[x][y+1].Embedded {
 						return true
 					}
 				}
@@ -71,6 +71,24 @@ func (board *Board) brickTouched(blocker BrickBlocker) bool {
 	}
 
 	return false
+}
+
+func (board *Board) brickCanRotate() bool {
+
+	if !board.brickTouched(Something) {
+		return true
+	}
+
+	brick := board.Brick
+
+	/* Brick's layout is asymetric */
+	if len(brick.Layout) != len(brick.Layout[0]) {
+		return false
+	} else {
+		return false
+	}
+
+	return true
 }
 
 func (board *Board) FillWithBrick() {
@@ -120,13 +138,13 @@ func (board *Board) BrickMoveDown() {
 
 func (board *Board) BrickRotate() {
 
-	if !board.brickTouched(BorderLeft | BorderRight) {
+	if board.brickCanRotate() {
 		board.Brick.Rotate()
 	}
 }
 
 func (board *Board) BrickDrop() {
-	PrintText("test", Position{1, 1})
+
 	for !board.brickTouched(BorderBottom | BrickBelow) {
 		board.BrickMoveDown()
 	}
