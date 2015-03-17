@@ -72,7 +72,6 @@ func drawBoard(board Board) {
 	for row, cells := range board.Matrix {
 		for col, cell := range cells {
 			x, y := board.Position.X+(row*2), board.Position.Y+col
-			// termbox.SetCell(x, y, cell.Char.Ch, cell.Char.Fg, cell.Char.Bg)
 			termbox.SetCell(x, y, '[', termbox.ColorBlack, (termbox.Attribute)(cell.Color))
 			termbox.SetCell(x+1, y, ']', termbox.ColorBlack, (termbox.Attribute)(cell.Color))
 		}

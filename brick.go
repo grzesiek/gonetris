@@ -83,7 +83,7 @@ func (brick *Brick) MoveDown() {
 	brick.Position.Y += 1
 }
 
-func (brick *Brick) Rotate() {
+func (brick *Brick) RotationLayout() [][]int {
 
 	/* Transpose matrix */
 	transposed := make([][]int, len(brick.Layout[0]))
@@ -108,7 +108,12 @@ func (brick *Brick) Rotate() {
 		}
 	}
 
-	brick.Layout = newLayout
+	return newLayout
+}
+
+func (brick *Brick) Rotate() {
+
+	brick.Layout = brick.RotationLayout()
 }
 
 func (brick *Brick) Drop() {

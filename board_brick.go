@@ -80,12 +80,34 @@ func (board *Board) brickCanRotate() bool {
 	}
 
 	brick := board.Brick
+	rotationPredictionLayout := brick.RotationLayout()
 
-	/* Brick's layout is asymetric */
-	if len(brick.Layout) != len(brick.Layout[0]) {
-		return false
-	} else {
-		return false
+	for bx, cells := range rotationPredictionLayout {
+		for by, cell := range cells {
+			x, y := brick.Position.X+bx, brick.Position.Y+by
+			if cell == 1 {
+				/* Check if x index > matrix */
+				if x > len(board.Matrix)-1 {
+					return false
+				}
+
+				/* Check if x index < matrix */
+				if x < 0 {
+					return false
+				}
+
+				/* Check if y index > matrix */
+				if y > len(board.Matrix[0])-1 {
+					return false
+				}
+
+				/* Embedded */
+				if board.Matrix[x][y].Embedded {
+					return false
+				}
+
+			}
+		}
 	}
 
 	return true
