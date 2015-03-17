@@ -137,6 +137,39 @@ func (board *Board) BrickNext() *Brick {
 	return brick
 }
 
+func (board *Board) RemoveFullLines() int {
+
+        var lineFull bool
+        var removedLines []int
+
+        for by := 0; by < len(board.Matrix[0]); by++ {
+                lineFull = true
+                for bx := 0 ; bx < len(board.Matrix); bx ++ {
+                        lineFull = lineFull && board.Matrix[bx][by].Embedded
+                }
+
+                if lineFull {
+                    for bx := 0; bx < len(board.Matrix); bx++ {
+                        board.Matrix[bx][by].Embedded = false
+                    }
+                    removedLines = append(removedLines, by);
+                }
+        }
+
+        if len(removedLines) > 0 {
+            for _, y := range removedLines {
+                for by := y-1; by > 0; by-- {
+                    for bx := 0; bx < len(board.Matrix); bx++ {
+                        board.Matrix[bx][by+1].Embedded = board.Matrix[bx][by].Embedded
+                        board.Matrix[bx][by].Embedded = false
+                    }
+                }
+            }
+        }
+
+        return len(removedLines)
+}
+
 func (board *Board) BrickMoveLeft() {
 
 	if !board.brickTouched(BorderLeft | BrickAtLeft) {
