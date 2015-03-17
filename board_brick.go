@@ -86,22 +86,22 @@ func (board *Board) brickCanRotate() bool {
 		for by, cell := range cells {
 			x, y := brick.Position.X+bx, brick.Position.Y+by
 			if cell == 1 {
-				/* Check if x index > matrix */
+				/* Check if x index > matrix capacity */
 				if x > len(board.Matrix)-1 {
 					return false
 				}
 
-				/* Check if x index < matrix */
+				/* Check if x index < matrix capacity */
 				if x < 0 {
 					return false
 				}
 
-				/* Check if y index > matrix */
+				/* Check if y index > matrix capacity */
 				if y > len(board.Matrix[0])-1 {
 					return false
 				}
 
-				/* Embedded */
+				/* Check if there is already embedded brick */
 				if board.Matrix[x][y].Embedded {
 					return false
 				}
