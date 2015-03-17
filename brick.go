@@ -1,12 +1,8 @@
 package main
 
-import (
-	"github.com/nsf/termbox-go"
-)
-
 type Brick struct {
 	Layout   [][]int
-	Color    termbox.Attribute
+	Color    Color
 	Board    *Board
 	Anchored bool
 	Position Position
@@ -18,10 +14,8 @@ var (
 
 func init() {
 
-	/* 2 - center of the brick */
-
 	IBrick := Brick{
-		Color: termbox.ColorBlue,
+		Color: ColorBlue,
 		Layout: [][]int{
 			{0, 1, 0},
 			{0, 1, 0},
@@ -29,40 +23,40 @@ func init() {
 			{0, 1, 0}}}
 
 	JBrick := Brick{
-		Color: termbox.ColorCyan,
+		Color: ColorCyan,
 		Layout: [][]int{
 			{0, 0, 0},
 			{1, 1, 1},
 			{0, 0, 1}}}
 
 	LBrick := Brick{
-		Color: termbox.ColorYellow,
+		Color: ColorYellow,
 		Layout: [][]int{
 			{0, 0, 0},
 			{1, 1, 1},
 			{1, 0, 0}}}
 
 	OBrick := Brick{
-		Color: termbox.ColorMagenta,
+		Color: ColorMagenta,
 		Layout: [][]int{
 			{1, 1},
 			{1, 1}}}
 
 	SBrick := Brick{
-		Color: termbox.ColorRed,
+		Color: ColorRed,
 		Layout: [][]int{
 			{0, 1, 1},
 			{1, 1, 0}}}
 
 	TBrick := Brick{
-		Color: termbox.ColorWhite,
+		Color: ColorWhite,
 		Layout: [][]int{
 			{0, 0, 0},
 			{1, 1, 1},
 			{0, 1, 0}}}
 
 	ZBrick := Brick{
-		Color: termbox.ColorGreen,
+		Color: ColorGreen,
 		Layout: [][]int{
 			{1, 1, 0},
 			{0, 1, 1}}}
@@ -78,18 +72,18 @@ func init() {
 }
 
 func (brick *Brick) MoveLeft() {
-	brick.Position.X -= 2
+	brick.Position.X -= 1
 }
 
 func (brick *Brick) MoveRight() {
-	brick.Position.X += 2
+	brick.Position.X += 1
 }
 
 func (brick *Brick) MoveDown() {
 	brick.Position.Y += 1
 }
 
-func (brick *Brick) Rotate() {
+func (brick *Brick) RotationLayout() [][]int {
 
 	/* Transpose matrix */
 	transposed := make([][]int, len(brick.Layout[0]))
@@ -114,7 +108,12 @@ func (brick *Brick) Rotate() {
 		}
 	}
 
-	brick.Layout = newLayout
+	return newLayout
+}
+
+func (brick *Brick) Rotate() {
+
+	brick.Layout = brick.RotationLayout()
 }
 
 func (brick *Brick) Drop() {

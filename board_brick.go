@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/nsf/termbox-go"
 	"math/rand"
 	"time"
 )
@@ -11,14 +10,10 @@ func (board *Board) BrickDraw() {
 	brick := board.Brick
 	for bx, cells := range brick.Layout {
 		for by, cell := range cells {
-			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
+			x, y := brick.Position.X+bx, brick.Position.Y+by
 			if cell == 1 {
-				board.Matrix[x][y].Char.Ch = '['
-				board.Matrix[x+1][y].Char.Ch = ']'
-				board.Matrix[x][y].Char.Bg = brick.Color
-				board.Matrix[x+1][y].Char.Bg = brick.Color
-				board.Matrix[x][y].Char.Fg = termbox.ColorBlack
-				board.Matrix[x+1][y].Char.Fg = termbox.ColorBlack
+				board.Matrix[x][y].Color = brick.Color
+				board.Matrix[x][y].Empty = false
 			}
 		}
 	}
@@ -30,16 +25,16 @@ func (board *Board) brickTouched(blocker BrickBlocker) bool {
 	brick := board.Brick
 	for bx, cells := range brick.Layout {
 		for by, cell := range cells {
-			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
+			x, y := brick.Position.X+bx, brick.Position.Y+by
 			if cell == 1 {
 
 				if blocker&BorderRight != 0 {
 					/* Touched right border */
-					if x+1 == len(board.Matrix)-1 {
+					if len(board.Matrix) == x+1 {
 						return true
 					}
 				}
-				if BorderLeft&blocker != 0 {
+				if blocker&BorderLeft != 0 {
 					/* Touched left border */
 					if x == 0 {
 						return true
@@ -47,26 +42,26 @@ func (board *Board) brickTouched(blocker BrickBlocker) bool {
 				}
 				if blocker&BorderBottom != 0 {
 					/* Touched bottom border */
-					if len(board.Matrix) == y+1 {
+					if len(board.Matrix[0]) == y+1 {
 						return true
 					}
 				}
 				if blocker&BrickBelow != 0 {
 					/* Touched other brick, that already filled board at the bottom */
-					if y+1 < len(board.Matrix) && board.Matrix[x][y+1].Filled {
+					if y+1 < len(board.Matrix[0]) && board.Matrix[x][y+1].Embedded {
 						return true
 					}
 				}
 				/* Check below conditions only if we are moving horizontally */
 				if blocker&BrickAtLeft != 0 {
 					/* Touched other brick, that already filled board at left */
-					if x > 2 && board.Matrix[x-2][y].Filled {
+					if x > 1 && board.Matrix[x-1][y].Embedded {
 						return true
 					}
 				}
 				if blocker&BrickAtRight != 0 {
 					/* Touched other brick, that already filled board at right */
-					if x+2 < len(board.Matrix) && board.Matrix[x+2][y].Filled {
+					if x+1 < len(board.Matrix) && board.Matrix[x+1][y].Embedded {
 						return true
 					}
 				}
@@ -78,15 +73,54 @@ func (board *Board) brickTouched(blocker BrickBlocker) bool {
 	return false
 }
 
+func (board *Board) brickCanRotate() bool {
+
+	if !board.brickTouched(Something) {
+		return true
+	}
+
+	brick := board.Brick
+	rotationPredictionLayout := brick.RotationLayout()
+
+	for bx, cells := range rotationPredictionLayout {
+		for by, cell := range cells {
+			x, y := brick.Position.X+bx, brick.Position.Y+by
+			if cell == 1 {
+				/* Check if x index > matrix capacity */
+				if x > len(board.Matrix)-1 {
+					return false
+				}
+
+				/* Check if x index < matrix capacity */
+				if x < 0 {
+					return false
+				}
+
+				/* Check if y index > matrix capacity */
+				if y > len(board.Matrix[0])-1 {
+					return false
+				}
+
+				/* Check if there is already embedded brick */
+				if board.Matrix[x][y].Embedded {
+					return false
+				}
+
+			}
+		}
+	}
+
+	return true
+}
+
 func (board *Board) FillWithBrick() {
 
 	brick := board.Brick
 	for bx, cells := range brick.Layout {
 		for by, cell := range cells {
-			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
+			x, y := brick.Position.X+bx, brick.Position.Y+by
 			if cell == 1 {
-				board.Matrix[x][y].Filled = true
-				board.Matrix[x+1][y].Filled = true
+				board.Matrix[x][y].Embedded = true
 			}
 		}
 	}
@@ -126,13 +160,13 @@ func (board *Board) BrickMoveDown() {
 
 func (board *Board) BrickRotate() {
 
-	if !board.brickTouched(BorderLeft | BorderRight) {
+	if board.brickCanRotate() {
 		board.Brick.Rotate()
 	}
 }
 
 func (board *Board) BrickDrop() {
-	PrintText("test", Position{1, 1})
+
 	for !board.brickTouched(BorderBottom | BrickBelow) {
 		board.BrickMoveDown()
 	}
