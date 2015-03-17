@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/nsf/termbox-go"
 	"math/rand"
 	"time"
 )
@@ -11,14 +10,10 @@ func (board *Board) BrickDraw() {
 	brick := board.Brick
 	for bx, cells := range brick.Layout {
 		for by, cell := range cells {
-			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
+			x, y := brick.Position.X+bx, brick.Position.Y+by
 			if cell == 1 {
-				board.Matrix[x][y].Char.Ch = '['
-				board.Matrix[x+1][y].Char.Ch = ']'
-				board.Matrix[x][y].Char.Bg = brick.Color
-				board.Matrix[x+1][y].Char.Bg = brick.Color
-				board.Matrix[x][y].Char.Fg = termbox.ColorBlack
-				board.Matrix[x+1][y].Char.Fg = termbox.ColorBlack
+				board.Matrix[x][y].Color = brick.Color
+				board.Matrix[x][y].Empty = false
 			}
 		}
 	}
@@ -30,7 +25,7 @@ func (board *Board) brickTouched(blocker BrickBlocker) bool {
 	brick := board.Brick
 	for bx, cells := range brick.Layout {
 		for by, cell := range cells {
-			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
+			x, y := brick.Position.X+bx, brick.Position.Y+by
 			if cell == 1 {
 
 				if blocker&BorderRight != 0 {
@@ -53,20 +48,20 @@ func (board *Board) brickTouched(blocker BrickBlocker) bool {
 				}
 				if blocker&BrickBelow != 0 {
 					/* Touched other brick, that already filled board at the bottom */
-					if y+1 < len(board.Matrix) && board.Matrix[x][y+1].Filled {
+					if y+1 < len(board.Matrix) && board.Matrix[x][y+1].Embedded {
 						return true
 					}
 				}
 				/* Check below conditions only if we are moving horizontally */
 				if blocker&BrickAtLeft != 0 {
 					/* Touched other brick, that already filled board at left */
-					if x > 2 && board.Matrix[x-2][y].Filled {
+					if x > 1 && board.Matrix[x-1][y].Embedded {
 						return true
 					}
 				}
 				if blocker&BrickAtRight != 0 {
 					/* Touched other brick, that already filled board at right */
-					if x+2 < len(board.Matrix) && board.Matrix[x+2][y].Filled {
+					if x+1 < len(board.Matrix) && board.Matrix[x+1][y].Embedded {
 						return true
 					}
 				}
@@ -83,10 +78,9 @@ func (board *Board) FillWithBrick() {
 	brick := board.Brick
 	for bx, cells := range brick.Layout {
 		for by, cell := range cells {
-			x, y := brick.Position.X+(bx*2), brick.Position.Y+by
+			x, y := brick.Position.X+bx, brick.Position.Y+by
 			if cell == 1 {
-				board.Matrix[x][y].Filled = true
-				board.Matrix[x+1][y].Filled = true
+				board.Matrix[x][y].Embedded = true
 			}
 		}
 	}

@@ -12,12 +12,13 @@ var (
 )
 
 type BoardCell struct {
-	Char   termbox.Cell
-	Filled bool
+	Color    Color
+	Empty    bool
+	Embedded bool
 }
 
 type Board struct {
-	Matrix   [20][20]BoardCell
+	Matrix   [20][10]BoardCell
 	Position Position
 	Brick    *Brick
 }
@@ -36,12 +37,14 @@ const (
 
 func (b Board) Draw() {
 
+	/* TODO
 	for row, cells := range b.Matrix {
 		for col, cell := range cells {
 			x, y := b.Position.X+row, b.Position.Y+col
 			termbox.SetCell(x, y, cell.Char.Ch, cell.Char.Fg, cell.Char.Bg)
 		}
 	}
+	*/
 }
 
 func (b Board) DrawFrame() {
@@ -67,10 +70,9 @@ func (b *Board) ResetEmptyCells() {
 
 	for x, cells := range b.Matrix {
 		for y, cell := range cells {
-			if cell.Filled == false {
-				b.Matrix[x][y].Char.Fg = termbox.ColorDefault
-				b.Matrix[x][y].Char.Bg = termbox.ColorBlack
-				b.Matrix[x][y].Char.Ch = ' '
+			if cell.Embedded == false {
+				b.Matrix[x][y].Empty = true
+				b.Matrix[x][y].Color = ColorBlack
 			}
 		}
 	}
@@ -84,9 +86,9 @@ func NewBoard(x, y int) *Board {
 
 	for x, cells := range board.Matrix {
 		for y := range cells {
-			board.Matrix[x][y].Char.Fg = termbox.ColorDefault
-			board.Matrix[x][y].Char.Bg = termbox.ColorBlack
-			board.Matrix[x][y].Filled = false
+			board.Matrix[x][y].Color = ColorBlack
+			board.Matrix[x][y].Empty = true
+			board.Matrix[x][y].Embedded = false
 		}
 	}
 

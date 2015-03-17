@@ -5,6 +5,20 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
+type Color termbox.Attribute
+
+const (
+	ColorDefault Color = (Color)(termbox.ColorDefault)
+	ColorBlack         = (Color)(termbox.ColorBlack)
+	ColorRed           = (Color)(termbox.ColorRed)
+	ColorGreen         = (Color)(termbox.ColorGreen)
+	ColorYellow        = (Color)(termbox.ColorYellow)
+	ColorBlue          = (Color)(termbox.ColorBlue)
+	ColorMagenta       = (Color)(termbox.ColorMagenta)
+	ColorCyan          = (Color)(termbox.ColorCyan)
+	ColorWhite         = (Color)(termbox.ColorWhite)
+)
+
 type Position struct {
 	X int
 	Y int
