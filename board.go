@@ -22,10 +22,10 @@ type Board struct {
 	Brick    *Brick
 }
 
-type BoardBlocker uint16
+type BrickBlocker uint16
 
 const (
-	BorderLeft BoardBlocker = 1 << iota
+	BorderLeft BrickBlocker = 1 << iota
 	BorderRight
 	BorderTop
 	BorderBottom

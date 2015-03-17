@@ -25,7 +25,7 @@ func (board *Board) BrickDraw() {
 
 }
 
-func (board *Board) brickTouched(blocker BoardBlocker) bool {
+func (board *Board) brickTouched(blocker BrickBlocker) bool {
 
 	brick := board.Brick
 	for bx, cells := range brick.Layout {
