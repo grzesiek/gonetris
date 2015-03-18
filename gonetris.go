@@ -1,14 +1,16 @@
 package main
 
 import (
+	"fmt"
 	"github.com/jessevdk/go-flags"
+	"os"
 	"sync"
 )
 
-var opts struct {
+var Opts struct {
 	Name     string `short:"n" long:"nick" description:"Your nickname in game" required:"true"`
 	Players  int    `short:"p" long:"players" description:"Number of players" required:"true"`
-        Interval int    `short:"i" long:"interval" description:"Step-down interval in miliseconds" required:"false" default:"400"`
+	Interval int    `short:"i" long:"interval" description:"Step-down interval in miliseconds" required:"false" default:"400"`
 }
 
 var (
@@ -18,9 +20,10 @@ var (
 
 func init() {
 
-	_, err := flags.Parse(&opts)
+	_, err := flags.Parse(&Opts)
 	if err != nil {
-		panic("Invalid flags !")
+		fmt.Println("Invalid flags !")
+		os.Exit(1)
 	}
 }
 
@@ -32,7 +35,7 @@ func main() {
 	go HandleKeys()
 	go HandlePlayers()
 	go HandleBoard()
-	go HandleTick(opts.Interval)
+	go HandleTick()
 
 	<-GameClose
 	TerminalClose <- true

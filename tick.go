@@ -9,11 +9,11 @@ var (
 	TickClose = make(chan bool)
 )
 
-func HandleTick(interval int) {
+func HandleTick() {
 
 	defer Wg.Done()
 
-        tick := time.Duration(interval) * time.Millisecond
+	tick := time.Duration(Opts.Interval) * time.Millisecond
 
 	for {
 		select {
