@@ -40,11 +40,17 @@ func (b *Board) ResetEmptyCells() {
 	for x, cells := range b.Matrix {
 		for y, cell := range cells {
 			if cell.Embedded == false {
-				b.Matrix[x][y].Empty = true
-				b.Matrix[x][y].Color = ColorBlack
+				b.ResetCell(x, y)
 			}
 		}
 	}
+}
+
+func (b *Board) ResetCell(x, y int) {
+
+	b.Matrix[x][y].Empty = true
+	b.Matrix[x][y].Embedded = false
+	b.Matrix[x][y].Color = ColorBlack
 }
 
 func NewBoard(x, y int) *Board {
@@ -94,13 +100,13 @@ func HandleBoard() {
 
 		/* User can move birck one last time after it touches something */
 		if board.NeedsNextBrick() {
+
 			/* Fill with current brick*/
 			board.FillWithBrick()
 			/* Chose next brick */
 			board.BrickNext()
-
-                        /* Remove full lines */
-                        board.RemoveFullLines()
+			/* Remove full lines */
+			board.RemoveFullLines()
 		}
 
 		/* Draw board */

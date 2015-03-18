@@ -79,6 +79,20 @@ func drawBoard(board Board) {
 
 }
 
+/*
+func drawDebugBoard(board Board) {
+
+	for row, cells := range board.Matrix {
+		for col, cell := range cells {
+			x, y := board.Position.X+(row*2), board.Position.Y+col
+			termbox.SetCell(x, y, '[', termbox.ColorBlack, (termbox.Attribute)(cell.Color))
+			termbox.SetCell(x+1, y, ']', termbox.ColorBlack, (termbox.Attribute)(cell.Color))
+		}
+	}
+
+}
+*/
+
 func HandleTerminal() {
 
 	defer Wg.Done()

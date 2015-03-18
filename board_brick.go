@@ -139,8 +139,7 @@ func (board *Board) RemoveFullLines() int {
 
 		if lineFull {
 			for bx := 0; bx < len(board.Matrix); bx++ {
-				board.Matrix[bx][by].Embedded = false
-				board.Matrix[bx][by].Empty = true
+				board.ResetCell(bx, by)
 			}
 			removedLines = append(removedLines, by)
 		}
@@ -150,9 +149,8 @@ func (board *Board) RemoveFullLines() int {
 		for _, y := range removedLines {
 			for by := y - 1; by > 0; by-- {
 				for bx := 0; bx < len(board.Matrix); bx++ {
-					board.Matrix[bx][by+1].Embedded = board.Matrix[bx][by].Embedded
-					board.Matrix[bx][by].Embedded = false
-					board.Matrix[bx][by].Empty = true
+					board.Matrix[bx][by+1] = board.Matrix[bx][by]
+					board.ResetCell(bx, by)
 				}
 			}
 		}
