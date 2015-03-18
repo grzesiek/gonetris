@@ -6,8 +6,9 @@ import (
 )
 
 var opts struct {
-	Name    string `short:"n" long:"nick" description:"Your nickname in game" required:"true"`
-	Players int    `short:"p" long:"players" description:"Number of players" required:"true"`
+	Name     string `short:"n" long:"nick" description:"Your nickname in game" required:"true"`
+	Players  int    `short:"p" long:"players" description:"Number of players" required:"true"`
+        Interval int    `short:"i" long:"interval" description:"Step-down interval in miliseconds" required:"false" default:"400"`
 }
 
 var (
@@ -31,7 +32,7 @@ func main() {
 	go HandleKeys()
 	go HandlePlayers()
 	go HandleBoard()
-	go HandleTick()
+	go HandleTick(opts.Interval)
 
 	<-GameClose
 	TerminalClose <- true
