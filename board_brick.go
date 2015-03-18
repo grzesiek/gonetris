@@ -11,7 +11,7 @@ func (board *Board) BrickDraw() {
 	for bx, cells := range brick.Layout {
 		for by, cell := range cells {
 			x, y := brick.Position.X+bx, brick.Position.Y+by
-			if cell == 1 {
+			if cell == 1 && y > -1 {
 				board.Matrix[x][y].Color = brick.Color
 				board.Matrix[x][y].Empty = false
 			}
@@ -26,7 +26,7 @@ func (board *Board) brickTouched(blocker BrickBlocker) bool {
 	for bx, cells := range brick.Layout {
 		for by, cell := range cells {
 			x, y := brick.Position.X+bx, brick.Position.Y+by
-			if cell == 1 {
+			if cell == 1 && y > -1 {
 
 				if blocker&BorderRight != 0 {
 					/* Touched right border */
@@ -85,7 +85,7 @@ func (board *Board) brickCanRotate() bool {
 	for bx, cells := range rotationPredictionLayout {
 		for by, cell := range cells {
 			x, y := brick.Position.X+bx, brick.Position.Y+by
-			if cell == 1 {
+			if cell == 1 && y > -1 {
 				/* Check if x index > matrix capacity */
 				if x > len(board.Matrix)-1 {
 					return false
@@ -119,7 +119,7 @@ func (board *Board) FillWithBrick() {
 	for bx, cells := range brick.Layout {
 		for by, cell := range cells {
 			x, y := brick.Position.X+bx, brick.Position.Y+by
-			if cell == 1 {
+			if cell == 1 && y > -1 {
 				board.Matrix[x][y].Embedded = true
 			}
 		}
@@ -162,7 +162,7 @@ func (board *Board) RemoveFullLines() int {
 func (board *Board) BrickNext() *Brick {
 	rand.Seed(time.Now().UTC().UnixNano())
 	brick := &Bricks[rand.Intn(7)]
-	brick.Position = Position{0, 0}
+	brick.Position = Position{4, brick.StartOffset - 1}
 	brick.Anchored = false
 	board.Brick = brick
 	brick.Board = board

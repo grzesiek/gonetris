@@ -1,11 +1,12 @@
 package main
 
 type Brick struct {
-	Layout   [][]int
-	Color    Color
-	Board    *Board
-	Anchored bool
-	Position Position
+	Layout      [][]int
+	Color       Color
+	Board       *Board
+	Anchored    bool
+	Position    Position
+	StartOffset int
 }
 
 var (
@@ -15,7 +16,8 @@ var (
 func init() {
 
 	IBrick := Brick{
-		Color: ColorBlue,
+		Color:       ColorBlue,
+		StartOffset: -1,
 		Layout: [][]int{
 			{0, 1, 0},
 			{0, 1, 0},
@@ -23,43 +25,51 @@ func init() {
 			{0, 1, 0}}}
 
 	JBrick := Brick{
-		Color: ColorCyan,
+		Color:       ColorCyan,
+		StartOffset: -2,
 		Layout: [][]int{
-			{0, 0, 0},
-			{1, 1, 1},
-			{0, 0, 1}}}
+			{0, 1, 1},
+			{0, 1, 0},
+			{0, 1, 0}}}
 
 	LBrick := Brick{
-		Color: ColorYellow,
+		Color:       ColorYellow,
+		StartOffset: -2,
 		Layout: [][]int{
-			{0, 0, 0},
-			{1, 1, 1},
-			{1, 0, 0}}}
+			{0, 1, 0},
+			{0, 1, 0},
+			{0, 1, 1}}}
 
 	OBrick := Brick{
-		Color: ColorMagenta,
+		Color:       ColorMagenta,
+		StartOffset: -1,
 		Layout: [][]int{
 			{1, 1},
 			{1, 1}}}
 
 	SBrick := Brick{
-		Color: ColorRed,
+		Color:       ColorRed,
+		StartOffset: -1,
 		Layout: [][]int{
-			{0, 1, 1},
-			{1, 1, 0}}}
+			{1, 0},
+			{1, 1},
+			{0, 1}}}
 
 	TBrick := Brick{
-		Color: ColorWhite,
+		Color:       ColorWhite,
+		StartOffset: -2,
 		Layout: [][]int{
-			{0, 0, 0},
-			{1, 1, 1},
+			{0, 1, 0},
+			{0, 1, 1},
 			{0, 1, 0}}}
 
 	ZBrick := Brick{
-		Color: ColorGreen,
+		Color:       ColorGreen,
+		StartOffset: -1,
 		Layout: [][]int{
-			{1, 1, 0},
-			{0, 1, 1}}}
+			{0, 1},
+			{1, 1},
+			{1, 0}}}
 
 	Bricks[0] = IBrick
 	Bricks[1] = JBrick
