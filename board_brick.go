@@ -132,7 +132,7 @@ func (board *Board) brickCanRotate() bool {
 
 				/* Check if there is already embedded brick */
 				if board.Matrix[x][y].Embedded {
-					return false /* TODO: rotation bug */
+					return false /* TODO: rotation bug somewhere */
 				}
 
 			}
@@ -153,39 +153,6 @@ func (board *Board) FillWithBrick() {
 			}
 		}
 	}
-}
-
-func (board *Board) RemoveFullLines() int {
-
-	var lineFull bool
-	var removedLines []int
-
-	for by := 0; by < len(board.Matrix[0]); by++ {
-		lineFull = true
-		for bx := 0; bx < len(board.Matrix); bx++ {
-			lineFull = lineFull && board.Matrix[bx][by].Embedded
-		}
-
-		if lineFull {
-			for bx := 0; bx < len(board.Matrix); bx++ {
-				board.Matrix.ResetCell(bx, by)
-			}
-			removedLines = append(removedLines, by)
-		}
-	}
-
-	if len(removedLines) > 0 {
-		for _, y := range removedLines {
-			for by := y - 1; by > 0; by-- {
-				for bx := 0; bx < len(board.Matrix); bx++ {
-					board.Matrix[bx][by+1] = board.Matrix[bx][by]
-					board.Matrix.ResetCell(bx, by)
-				}
-			}
-		}
-	}
-
-	return len(removedLines)
 }
 
 func (board *Board) BrickNext() *Brick {

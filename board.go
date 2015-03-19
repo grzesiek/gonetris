@@ -74,7 +74,7 @@ func HandleBoard() {
 		board.Matrix.ResetEmptyCells()
 		/* Draw current brick board */
 		board.BrickDraw()
-		/* Draw current brick shadow */
+		/* Set current brick shadow */
 		board.BrickSetShadow()
 
 		/* User can move birck one last time after it touches something */
@@ -85,7 +85,7 @@ func HandleBoard() {
 			/* Chose next brick */
 			board.BrickNext()
 			/* Remove full lines */
-			board.RemoveFullLines()
+			board.Matrix.RemoveFullLines()
 		}
 
 		/* Draw board */
