@@ -20,6 +20,35 @@ func (board *Board) BrickDraw() {
 
 }
 
+func (board *Board) BrickShadowDraw() {
+
+	brick := board.Brick
+	layout := brick.Layout
+	minX := len(layout)
+	maxX := 0
+
+	for x, cells := range layout {
+		for _, cell := range cells {
+			if cell == 1 {
+				if x < minX {
+					minX = x
+				}
+
+				if x > maxX {
+					maxX = x
+				}
+			}
+		}
+	}
+
+	minX += brick.Position.X
+	maxX += brick.Position.X
+
+	for x := range board.Shadow {
+		board.Shadow[x] = x >= minX && x <= maxX
+	}
+}
+
 func (board *Board) brickTouched(blocker BrickBlocker) bool {
 
 	brick := board.Brick

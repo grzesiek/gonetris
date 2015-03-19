@@ -20,6 +20,7 @@ type Board struct {
 	Matrix   [10][20]BoardCell
 	Position Position
 	Brick    *Brick
+	Shadow   [10]bool
 }
 
 type BrickBlocker uint16
@@ -97,6 +98,8 @@ func HandleBoard() {
 		board.ResetEmptyCells()
 		/* Draw current brick board */
 		board.BrickDraw()
+		/* Draw current brick shadow */
+		board.BrickShadowDraw()
 
 		/* User can move birck one last time after it touches something */
 		if board.NeedsNextBrick() {
