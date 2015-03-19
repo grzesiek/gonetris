@@ -47,6 +47,7 @@ func (matrix *BoardMatrix) RemoveFullLines() int {
 				}
 			}
 		}
+		matrix.ResetEmptyCells()
 	}
 
 	return len(removedLines)
