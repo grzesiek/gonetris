@@ -77,6 +77,20 @@ func drawBoard(board Board) {
 		}
 	}
 
+	var color termbox.Attribute
+	Y := board.Position.Y + len(board.Matrix[0]) + 1
+	X := board.Position.X
+
+	for x, shadow := range board.Shadow {
+		if shadow {
+			color = termbox.ColorWhite
+		} else {
+			color = termbox.ColorBlack
+		}
+		termbox.SetCell(X+2*x, Y, '=', color, termbox.ColorBlack)
+		termbox.SetCell(X+2*x+1, Y, '=', color, termbox.ColorBlack)
+	}
+
 }
 
 /*
