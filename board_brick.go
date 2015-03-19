@@ -20,32 +20,32 @@ func (board *Board) BrickDraw() {
 
 }
 
-func (board *Board) BrickShadowDraw() {
+func (board *Board) BrickSetShadow() {
 
 	brick := board.Brick
-	layout := brick.Layout
-	minX := len(layout)
-	maxX := 0
+	min := len(brick.Layout)
+	max := 0
 
-	for x, cells := range layout {
+	for x, cells := range brick.Layout {
 		for _, cell := range cells {
 			if cell == 1 {
-				if x < minX {
-					minX = x
+
+				if x < min {
+					min = x
 				}
 
-				if x > maxX {
-					maxX = x
+				if x > max {
+					max = x
 				}
 			}
 		}
 	}
 
-	minX += brick.Position.X
-	maxX += brick.Position.X
+	min += brick.Position.X
+	max += brick.Position.X
 
 	for x := range board.Shadow {
-		board.Shadow[x] = x >= minX && x <= maxX
+		board.Shadow[x] = x >= min && x <= max
 	}
 }
 
@@ -168,7 +168,7 @@ func (board *Board) RemoveFullLines() int {
 
 		if lineFull {
 			for bx := 0; bx < len(board.Matrix); bx++ {
-				board.ResetCell(bx, by)
+				board.Matrix.ResetCell(bx, by)
 			}
 			removedLines = append(removedLines, by)
 		}
@@ -179,7 +179,7 @@ func (board *Board) RemoveFullLines() int {
 			for by := y - 1; by > 0; by-- {
 				for bx := 0; bx < len(board.Matrix); bx++ {
 					board.Matrix[bx][by+1] = board.Matrix[bx][by]
-					board.ResetCell(bx, by)
+					board.Matrix.ResetCell(bx, by)
 				}
 			}
 		}

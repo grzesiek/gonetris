@@ -10,14 +10,8 @@ var (
 	BoardClose          = make(chan bool)
 )
 
-type BoardCell struct {
-	Color    Color
-	Empty    bool
-	Embedded bool
-}
-
 type Board struct {
-	Matrix   [10][20]BoardCell
+	Matrix   BoardMatrix
 	Position Position
 	Brick    *Brick
 	Shadow   [10]bool
@@ -35,24 +29,6 @@ const (
 	BrickBelow
 	Something = 127
 )
-
-func (b *Board) ResetEmptyCells() {
-
-	for x, cells := range b.Matrix {
-		for y, cell := range cells {
-			if cell.Embedded == false {
-				b.ResetCell(x, y)
-			}
-		}
-	}
-}
-
-func (b *Board) ResetCell(x, y int) {
-
-	b.Matrix[x][y].Empty = true
-	b.Matrix[x][y].Embedded = false
-	b.Matrix[x][y].Color = ColorBlack
-}
 
 func NewBoard(x, y int) *Board {
 
@@ -95,11 +71,11 @@ func HandleBoard() {
 		}
 
 		/* Reset empty cells (not filled) */
-		board.ResetEmptyCells()
+		board.Matrix.ResetEmptyCells()
 		/* Draw current brick board */
 		board.BrickDraw()
 		/* Draw current brick shadow */
-		board.BrickShadowDraw()
+		board.BrickSetShadow()
 
 		/* User can move birck one last time after it touches something */
 		if board.NeedsNextBrick() {
