@@ -76,36 +76,25 @@ func drawBoard(board Board) {
 			termbox.SetCell(x+1, y, ']', termbox.ColorBlack, (termbox.Attribute)(cell.Color))
 		}
 	}
+}
 
-	var color termbox.Attribute
-	Y := board.Position.Y + len(board.Matrix[0]) + 1
-	X := board.Position.X
+func drawBrickShadow(board Board) {
+
+	bottom_frame_x := board.Position.X
+	bottom_frame_y := board.Position.Y + len(board.Matrix[0])
+
+	var border_rune rune
 
 	for x, shadow := range board.Shadow {
 		if shadow {
-			color = termbox.ColorWhite
+			border_rune = '='
 		} else {
-			color = termbox.ColorBlack
+			border_rune = '-'
 		}
-		termbox.SetCell(X+2*x, Y, '=', color, termbox.ColorBlack)
-		termbox.SetCell(X+2*x+1, Y, '=', color, termbox.ColorBlack)
+		termbox.SetCell(bottom_frame_x+(2*x), bottom_frame_y, border_rune, termbox.ColorWhite, termbox.ColorBlack)
+		termbox.SetCell(bottom_frame_x+((2*x)+1), bottom_frame_y, border_rune, termbox.ColorWhite, termbox.ColorBlack)
 	}
-
 }
-
-/*
-func drawDebugBoard(board Board) {
-
-	for row, cells := range board.Matrix {
-		for col, cell := range cells {
-			x, y := board.Position.X+(row*2), board.Position.Y+col
-			termbox.SetCell(x, y, '[', termbox.ColorBlack, (termbox.Attribute)(cell.Color))
-			termbox.SetCell(x+1, y, ']', termbox.ColorBlack, (termbox.Attribute)(cell.Color))
-		}
-	}
-
-}
-*/
 
 func HandleTerminal() {
 
@@ -119,6 +108,7 @@ func HandleTerminal() {
 			drawBoardFrame(board)
 		case board := <-TerminalBoardEvent:
 			drawBoard(board)
+			drawBrickShadow(board)
 		case <-TerminalClose:
 			return
 		}
