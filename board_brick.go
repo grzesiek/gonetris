@@ -161,9 +161,11 @@ func (board *Board) RemoveFullLines() int {
 
 func (board *Board) BrickNext() *Brick {
 	rand.Seed(time.Now().UTC().UnixNano())
-	brick := &Bricks[rand.Intn(7)]
-	brick.Position = Position{4, brick.StartOffset - 1}
-	brick.Anchored = false
+	newBrick := Bricks[rand.Intn(7)]
+	newBrick.Position = Position{4, newBrick.StartOffset - 1}
+	newBrick.Anchored = false
+
+	brick := &newBrick
 	board.Brick = brick
 	brick.Board = board
 
