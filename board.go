@@ -17,32 +17,11 @@ type Board struct {
 	Shadow   [10]bool
 }
 
-type BrickBlocker uint16
-
-const (
-	BorderLeft BrickBlocker = 1 << iota
-	BorderRight
-	BorderTop
-	BorderBottom
-	BrickAtLeft
-	BrickAtRight
-	BrickBelow
-	Something = 127
-)
-
 func NewBoard(x, y int) *Board {
 
 	var board Board
-
 	board.Position = Position{X: x, Y: y}
-
-	for x, cells := range board.Matrix {
-		for y := range cells {
-			board.Matrix[x][y].Color = ColorBlack
-			board.Matrix[x][y].Empty = true
-			board.Matrix[x][y].Embedded = false
-		}
-	}
+	board.Matrix = NewBoardMatrix()
 
 	TerminalNewBoardEvent <- board
 	return &board

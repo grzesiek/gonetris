@@ -5,6 +5,19 @@ import (
 	"time"
 )
 
+type BrickBlocker uint16
+
+const (
+	BorderLeft BrickBlocker = 1 << iota
+	BorderRight
+	BorderTop
+	BorderBottom
+	BrickAtLeft
+	BrickAtRight
+	BrickBelow
+	Something = 127
+)
+
 func (board *Board) BrickDraw() {
 
 	brick := board.Brick

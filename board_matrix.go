@@ -1,12 +1,25 @@
 package main
 
+type BoardMatrix [10][20]BoardCell
+
 type BoardCell struct {
 	Color    Color
 	Empty    bool
 	Embedded bool
 }
 
-type BoardMatrix [10][20]BoardCell
+func NewBoardMatrix() BoardMatrix {
+
+	var matrix BoardMatrix
+
+	for x, cells := range matrix {
+		for y := range cells {
+			matrix.resetCell(x, y)
+		}
+	}
+
+	return matrix
+}
 
 func (matrix *BoardMatrix) ResetEmptyCells() {
 
