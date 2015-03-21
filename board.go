@@ -4,17 +4,15 @@ import (
 	"reflect"
 )
 
-var (
-	BoardEvent          = make(chan bool)
-	BoardBrickOperation = make(chan string)
-	BoardClose          = make(chan bool)
-)
+var ()
 
 type Board struct {
-	Matrix   BoardMatrix
-	Position Position
-	Brick    *Brick
-	Shadow   [10]bool
+	Matrix     BoardMatrix
+	Position   Position
+	Shadow     [10]bool
+	brick      *Brick
+	boardEvent chan Board
+	closeEvent chan bool
 }
 
 func NewBoard(x, y int) *Board {
@@ -22,18 +20,23 @@ func NewBoard(x, y int) *Board {
 	var board Board
 	board.Position = Position{X: x, Y: y}
 	board.Matrix = NewBoardMatrix()
+	board.boardEvent = make(chan Board)
+	board.closeEvent = make(chan bool)
 
+	/* TODO: this should go to Brick or be changed in other way
+	BoardBrickOperation = make(chan string)
+	*/
+
+	/* TODO: This shoudln't be needed anymore
 	TerminalNewBoardEvent <- board
+	*/
+
 	return &board
 }
 
-func HandleBoard() {
+func (board *Board) Handle(player Player) {
 
 	defer Wg.Done()
-
-	/* First player is my player*/
-	player := <-PlayersChan
-	board := player.Board
 
 	/* Create first brick */
 	board.BrickNext()
@@ -67,7 +70,7 @@ func HandleBoard() {
 			board.Matrix.RemoveFullLines()
 		}
 
-		/* Draw board */
-		TerminalBoardEvent <- *board
+		/* emit boardEvent */
+		boardEvent <- *board
 	}
 }
