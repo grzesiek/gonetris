@@ -5,6 +5,10 @@ import (
 	"github.com/nsf/termbox-go"
 )
 
+type Terminal struct {
+	closeEvent chan bool
+}
+
 type Color termbox.Attribute
 
 const (
@@ -24,11 +28,18 @@ type Position struct {
 	Y int
 }
 
-var (
-	TerminalNewBoardEvent = make(chan Board)
-	TerminalBoardEvent    = make(chan Board)
-	TerminalClose         = make(chan bool)
-)
+func NewTerminal() (terminal Terminal, closeEvent chan bool) {
+	/*
+		newBoardEvent = make(chan Board)
+		boardEvent = make(chan Board)
+		TODO: BoardEvents should go to Board
+	*/
+
+	closeEvent = make(chan bool)
+	terminal = Terminal{closeEvent}
+
+	return
+}
 
 func init() {
 
@@ -48,7 +59,9 @@ func PrintText(value interface{}, p Position) {
 	}
 }
 
-func drawBoardFrame(board Board) {
+/* TODO: two functions below should go to BoardFrame struct */
+
+func (t *Terminal) drawBoardFrame(board Board) {
 
 	width, height := len(board.Matrix)*2, len(board.Matrix[0])
 	x, y := board.Position.X, board.Position.Y
@@ -67,7 +80,7 @@ func drawBoardFrame(board Board) {
 	}
 }
 
-func drawBoard(board Board) {
+func (t *Terminal) drawBoard(board Board) {
 
 	for row, cells := range board.Matrix {
 		for col, cell := range cells {
@@ -78,7 +91,7 @@ func drawBoard(board Board) {
 	}
 }
 
-func drawBrickShadow(board Board) {
+func (t *Terminal) drawBrickShadow(board Board) {
 
 	bottom_frame_x := board.Position.X
 	bottom_frame_y := board.Position.Y + len(board.Matrix[0])
@@ -96,7 +109,7 @@ func drawBrickShadow(board Board) {
 	}
 }
 
-func HandleTerminal() {
+func (terminal *Terminal) Handle(boardEvent, newBoardEvent chan Board) {
 
 	defer Wg.Done()
 	defer fmt.Println("Bye bye !")
@@ -104,12 +117,13 @@ func HandleTerminal() {
 
 	for {
 		select {
-		case board := <-TerminalNewBoardEvent:
-			drawBoardFrame(board)
-		case board := <-TerminalBoardEvent:
-			drawBoard(board)
-			drawBrickShadow(board)
-		case <-TerminalClose:
+		case board := <-newBoardEvent:
+			terminal.drawBoardFrame(board)
+		case board := <-boardEvent:
+			/* TODO: this should be done in one function */
+			terminal.drawBoard(board)
+			terminal.drawBrickShadow(board)
+		case <-terminal.closeEvent:
 			return
 		}
 
