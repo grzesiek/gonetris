@@ -4,24 +4,29 @@ import (
 	"time"
 )
 
-var (
-	tick      time.Duration
-	TickClose = make(chan bool)
-)
+type Tick struct {
+	tickTime   time.Duration
+	closeEvent chan bool
+}
 
-func HandleTick() {
+func NewTick() *Tick {
+	tickTime := time.Duration(Opts.Interval) * time.Millisecond
+	closeEvent := make(chan bool)
+
+	return &Tick{tickTime, closeEvent}
+}
+
+func (tick *Tick) Handle(brickOperationEvent chan string) {
 
 	defer Wg.Done()
 
-	tick := time.Duration(Opts.Interval) * time.Millisecond
-
 	for {
 		select {
-		case <-TickClose:
+		case <-closeEvent:
 			return
 		default:
-			BoardBrickOperation <- "BrickMoveDown"
-			time.Sleep(tick)
+			brickOperationEvent <- "BrickMoveDown"
+			time.Sleep(time)
 		}
 	}
 }

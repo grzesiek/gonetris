@@ -6,7 +6,7 @@ import (
 )
 
 type Terminal struct {
-	closeEvent chan bool
+	CloseEvent chan bool
 }
 
 type Color termbox.Attribute
@@ -28,17 +28,12 @@ type Position struct {
 	Y int
 }
 
-func NewTerminal() (terminal Terminal, closeEvent chan bool) {
-	/*
-		newBoardEvent = make(chan Board)
-		boardEvent = make(chan Board)
-		TODO: BoardEvents should go to Board
-	*/
+func NewTerminal() *Terminal {
 
 	closeEvent = make(chan bool)
 	terminal = Terminal{closeEvent}
 
-	return
+	return &terminal
 }
 
 func init() {
@@ -59,7 +54,7 @@ func PrintText(value interface{}, p Position) {
 	}
 }
 
-/* TODO: two functions below should go to BoardFrame struct */
+/* TODO: those functions below should go to different structs */
 
 func (t *Terminal) drawBoardFrame(board Board) {
 
