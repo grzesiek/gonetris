@@ -8,16 +8,6 @@ type Player struct {
 	Host     string
 }
 
-var (
-	Players     []*Player
-	PlayersChan = make(chan *Player)
-	PlayerEvent = make(chan *Player)
-)
-
-func init() {
-	Players = make([]*Player, 0, Opts.Players)
-}
-
 func newPlayer() *Player {
 
 	var player Player
@@ -25,10 +15,4 @@ func newPlayer() *Player {
 	PlayersChan <- &player
 
 	return &player
-}
-
-func HandlePlayers() {
-
-	defer Wg.Done()
-	Players = append(Players, newPlayer())
 }
