@@ -1,25 +1,31 @@
 package board
 
 import (
+	"github.com/grzesiek/gonetris/brick"
 	"reflect"
 )
 
+type position struct {
+	X, Y int
+}
 type board struct {
-	Matrix     BoardMatrix
-	Position   Position
+	Matrix     matrix
 	Shadow     [10]bool
-	Brick      *Brick
+	Brick      *brick.Brick
 	BoardEvent chan Board
 	CloseEvent chan bool
+	X          int
+	Y          int
 }
 
 func New(x, y int) *Board {
 
 	var board Board
-	board.Position = Position{X: x, Y: y}
-	board.Matrix = NewBoardMatrix()
-	board.boardEvent = make(chan Board)
-	board.closeEvent = make(chan bool)
+	board.X = x
+	board.Y = y
+	board.Matrix = newMatrix()
+	board.BoardEvent = make(chan Board)
+	board.CloseEvent = make(chan bool)
 
 	/* TODO: this should go to Brick or be changed in other way
 	BoardBrickOperation = make(chan string)
@@ -51,21 +57,21 @@ func (board *Board) Handle(wg sync.WaitGroup, player Player) {
 		}
 
 		/* Reset empty cells (not filled) */
-		board.Matrix.ResetEmptyCells()
+		board.Matrix.resetEmptyCells()
 		/* Draw current brick board */
-		board.BrickDraw()
+		board.brickDraw()
 		/* Set current brick shadow */
-		board.BrickSetShadow()
+		board.brickSetShadow()
 
 		/* User can move birck one last time after it touches something */
-		if board.NeedsNextBrick() {
+		if board.needsNextBrick() {
 
 			/* Fill with current brick*/
-			board.FillWithBrick()
+			board.fillWithBrick()
 			/* Chose next brick */
-			board.BrickNext()
+			board.brickNext()
 			/* Remove full lines */
-			board.Matrix.RemoveFullLines()
+			board.Matrix.removeFullLines()
 		}
 
 		/* emit boardEvent */

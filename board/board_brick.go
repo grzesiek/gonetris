@@ -1,24 +1,24 @@
-package main
+package board
 
 import (
 	"math/rand"
 	"time"
 )
 
-type BrickBlocker uint16
+type brickBlocker uint16
 
 const (
-	BorderLeft BrickBlocker = 1 << iota
-	BorderRight
-	BorderTop
-	BorderBottom
-	BrickAtLeft
-	BrickAtRight
-	BrickBelow
-	Something = 127
+	borderLeft brickBlocker = 1 << iota
+	borderRight
+	borderTop
+	borderBottom
+	brickAtLeft
+	brickAtRight
+	brickBelow
+	something = 127
 )
 
-func (board *Board) BrickDraw() {
+func (board *Board) brickDraw() {
 
 	brick := board.Brick
 	for bx, cells := range brick.Layout {
@@ -33,7 +33,7 @@ func (board *Board) BrickDraw() {
 
 }
 
-func (board *Board) BrickSetShadow() {
+func (board *Board) brickSetShadow() {
 
 	brick := board.Brick
 	min := len(brick.Layout)

@@ -1,11 +1,12 @@
-package main
+package brick
+
+import "github.com/grzesiek/gonetris/terminal"
 
 type Brick struct {
 	Layout      [][]int
-	Color       Color
-	Board       *Board
+	Color       terminal.Color
+	Position    terminal.Position
 	Anchored    bool
-	Position    Position
 	StartOffset int
 }
 
@@ -124,7 +125,4 @@ func (brick *Brick) RotationLayout() [][]int {
 func (brick *Brick) Rotate() {
 
 	brick.Layout = brick.RotationLayout()
-}
-
-func (brick *Brick) Drop() {
 }

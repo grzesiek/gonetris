@@ -1,27 +1,27 @@
-package main
+package board
 
-type BoardMatrix [10][20]BoardCell
-
-type BoardCell struct {
+type cell struct {
 	Color    Color
 	Empty    bool
 	Embedded bool
 }
 
-func NewBoardMatrix() BoardMatrix {
+type matrix [10][20]cell
 
-	var matrix BoardMatrix
+func newMatrix() matrix {
 
-	for x, cells := range matrix {
+	var m matrix
+
+	for x, cells := range m {
 		for y := range cells {
-			matrix.resetCell(x, y)
+			m.resetCell(x, y)
 		}
 	}
 
-	return matrix
+	return m
 }
 
-func (matrix *BoardMatrix) ResetEmptyCells() {
+func (matrix *matrix) resetEmptyCells() {
 
 	for x, cells := range matrix {
 		for y, cell := range cells {
@@ -32,7 +32,7 @@ func (matrix *BoardMatrix) ResetEmptyCells() {
 	}
 }
 
-func (matrix *BoardMatrix) RemoveFullLines() int {
+func (matrix *matrix) removeFullLines() int {
 
 	var lineFull bool
 	var removedLines []int
@@ -60,13 +60,13 @@ func (matrix *BoardMatrix) RemoveFullLines() int {
 				}
 			}
 		}
-		matrix.ResetEmptyCells()
+		matrix.resetEmptyCells()
 	}
 
 	return len(removedLines)
 }
 
-func (matrix *BoardMatrix) resetCell(x, y int) {
+func (matrix *matrix) resetCell(x, y int) {
 
 	matrix[x][y].Empty = true
 	matrix[x][y].Embedded = false
