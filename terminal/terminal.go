@@ -3,6 +3,7 @@ package terminal
 import (
 	"fmt"
 	"github.com/nsf/termbox-go"
+	"sync"
 )
 
 type terminal struct {
@@ -30,8 +31,8 @@ type Position struct {
 
 func NewTerminal() *terminal {
 
-	closeEvent = make(chan bool)
-	t = terminal{closeEvent}
+	closeEvent := make(chan bool)
+	t := terminal{closeEvent}
 
 	return &t
 }
@@ -104,9 +105,9 @@ func (t *terminal) drawBrickShadow(board Board) {
 	}
 }
 
-func (terminal *terminal) Handle(boardEvent, newBoardEvent chan Board) {
+func (terminal *terminal) Handle(wg sync.WaitGroup, boardEvent, newBoardEvent chan Board) {
 
-	defer Wg.Done()
+	defer wg.Done()
 	defer fmt.Println("Bye bye !")
 	defer termbox.Close()
 
@@ -118,7 +119,7 @@ func (terminal *terminal) Handle(boardEvent, newBoardEvent chan Board) {
 			/* TODO: this should be done in one function */
 			terminal.drawBoard(board)
 			terminal.drawBrickShadow(board)
-		case <-terminal.closeEvent:
+		case <-terminal.CloseEvent:
 			return
 		}
 

@@ -1,12 +1,12 @@
 package main
 
-type Multiplayer struct {
+type multiplayer struct {
 	Players        []*Player
 	NewPlayerEvent chan *Player
 	PlayerEvent    chan *Player
 }
 
-func NewMultiplayer() *Multiplayer {
+func New() *multiplayer {
 
 	players := make([]*Player, 0, Opts.Players)
 	newPlayerEvent := make(chan *Player)
@@ -16,8 +16,8 @@ func NewMultiplayer() *Multiplayer {
 	return &multiplayer
 }
 
-func (multiplayer *Multiplayer) Handle() {
+func (multiplayer *multiplayer) Handle() {
 
 	defer Wg.Done()
-	Players = append(Players, newPlayer())
+	multiplayer.Players = append(Players, newPlayer())
 }

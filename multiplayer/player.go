@@ -1,6 +1,8 @@
 package main
 
-import ()
+import (
+	"github.com/grzesiek/gonetris/board"
+)
 
 type Player struct {
 	Board    *Board

@@ -1,8 +1,13 @@
 package terminal
 
-func (terminal *terminal) HandleKeys(gameCloseEvent chan bool, brickOperationEvent chan string) {
+import (
+	"github.com/nsf/termbox-go"
+	"sync"
+)
 
-	defer Wg.Done()
+func (terminal *terminal) HandleKeys(wg sync.WaitGroup, gameCloseEvent chan bool, brickOperationEvent chan string) {
+
+	defer wg.Done()
 
 	for {
 		if event := termbox.PollEvent(); event.Type == termbox.EventKey {
