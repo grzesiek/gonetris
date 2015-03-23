@@ -1,44 +1,48 @@
 package board
 
 import (
-	"github.com/grzesiek/gonetris/brick"
 	"reflect"
+	"sync"
+
+	"github.com/grzesiek/gonetris/brick"
+	"github.com/grzesiek/gonetris/terminal"
 )
 
 type position struct {
 	X, Y int
 }
 type board struct {
-	Matrix     matrix
-	Shadow     [10]bool
-	Brick      *brick.Brick
-	BoardEvent chan Board
-	CloseEvent chan bool
-	X          int
-	Y          int
+	Matrix         matrix
+	Shadow         [10]bool
+	Brick          *brick.Brick
+	DrawEvent      chan terminal.Drawable
+	CloseEvent     chan bool
+	BrickOperation chan string
+	X              int
+	Y              int
 }
 
-func New(x, y int) *Board {
+func New(x, y int) *board {
 
-	var board Board
+	var board board
 	board.X = x
 	board.Y = y
 	board.Matrix = newMatrix()
-	board.BoardEvent = make(chan Board)
+	board.DrawEvent = make(chan terminal.Drawable)
 	board.CloseEvent = make(chan bool)
 
 	/* TODO: this should go to Brick or be changed in other way
-	BoardBrickOperation = make(chan string)
+	boardBrickOperation = make(chan string)
 	*/
 
 	/* TODO: This shoudln't be needed anymore
-	TerminalNewBoardEvent <- board
+	TerminalNewboardEvent <- board
 	*/
 
 	return &board
 }
 
-func (board *Board) Handle(wg sync.WaitGroup, player Player) {
+func (board *board) Handle(wg sync.WaitGroup) {
 
 	defer wg.Done()
 
@@ -48,11 +52,11 @@ func (board *Board) Handle(wg sync.WaitGroup, player Player) {
 	for {
 
 		select {
-		case method := <-BoardBrickOperation:
+		case method := <-board.BrickOperation:
 			/* Player wants to modify brick - move, rotate, drop ... by reflection */
 			/* This also handles moving down bick on tick */
 			reflect.ValueOf(board).MethodByName(method).Call([]reflect.Value{})
-		case <-Close:
+		case <-board.CloseEvent:
 			return
 		}
 
@@ -75,6 +79,6 @@ func (board *Board) Handle(wg sync.WaitGroup, player Player) {
 		}
 
 		/* emit boardEvent */
-		boardEvent <- *board
+		board.DrawEvent <- *board
 	}
 }

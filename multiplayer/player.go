@@ -1,20 +1,12 @@
-package main
-
-import (
-	"github.com/grzesiek/gonetris/board"
-)
+package multiplayer
 
 type Player struct {
-	Board    *Board
 	Nickname string
 	Host     string
 }
 
-func newPlayer() *Player {
+func newPlayer(nick, host string) *Player {
 
-	var player Player
-	player.Board = NewBoard(5, 5)
-	PlayersChan <- &player
-
+	player := Player{nick, host}
 	return &player
 }

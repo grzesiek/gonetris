@@ -50,7 +50,7 @@ func New() *terminal {
 	return &t
 }
 
-func (t *terminal) PrintText(value interface{}, p Position) {
+func PrintText(value interface{}, p Position) {
 
 	text := fmt.Sprintf("%v", value)
 	for i, char := range text {
@@ -58,7 +58,7 @@ func (t *terminal) PrintText(value interface{}, p Position) {
 	}
 }
 
-func (terminal *terminal) SetCell(x, y int, char rune, fg, bg Color) {
+func SetCell(x, y int, char rune, fg, bg Color) {
 	termbox.SetCell(x, y, char, termbox.Attribute(fg), termbox.Attribute(bg))
 }
 

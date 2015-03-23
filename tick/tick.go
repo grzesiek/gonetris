@@ -1,32 +1,33 @@
-package main
+package tick
 
 import (
+	"sync"
 	"time"
 )
 
 type Tick struct {
-	tickTime   time.Duration
-	closeEvent chan bool
+	Time       time.Duration
+	CloseEvent chan bool
 }
 
-func NewTick(interval int) *Tick {
+func New(interval int) *Tick {
 	tickTime := time.Duration(interval) * time.Millisecond
 	closeEvent := make(chan bool)
 
 	return &Tick{tickTime, closeEvent}
 }
 
-func (tick *Tick) Handle(brickOperationEvent chan string) {
+func (tick *Tick) Handle(wg sync.WaitGroup, brickOperationEvent chan string) {
 
-	defer Wg.Done()
+	defer wg.Done()
 
 	for {
 		select {
-		case <-closeEvent:
+		case <-tick.CloseEvent:
 			return
 		default:
 			brickOperationEvent <- "BrickMoveDown"
-			time.Sleep(time)
+			time.Sleep(tick.Time)
 		}
 	}
 }

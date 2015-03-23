@@ -1,7 +1,9 @@
 package board
 
+import "github.com/grzesiek/gonetris/terminal"
+
 type cell struct {
-	Color    Color
+	Color    terminal.Color
 	Empty    bool
 	Embedded bool
 }
@@ -70,5 +72,5 @@ func (matrix *matrix) resetCell(x, y int) {
 
 	matrix[x][y].Empty = true
 	matrix[x][y].Embedded = false
-	matrix[x][y].Color = ColorBlack
+	matrix[x][y].Color = terminal.ColorBlack
 }

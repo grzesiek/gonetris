@@ -2,11 +2,15 @@ package game
 
 import (
 	"fmt"
-	"github.com/grzesiek/gonetris/board"
-	"github.com/grzesiek/gonetris/multiplayer"
-	"github.com/jessevdk/go-flags"
 	"os"
 	"sync"
+
+	"github.com/jessevdk/go-flags"
+
+	"github.com/grzesiek/gonetris/board"
+	"github.com/grzesiek/gonetris/multiplayer"
+	"github.com/grzesiek/gonetris/terminal"
+	"github.com/grzesiek/gonetris/tick"
 )
 
 type opts struct {
@@ -38,14 +42,14 @@ func (game *game) Handle() {
 
 	game.Wg.Add(5)
 
-	multiplayer := multiplayer.New()
+	multiplayer := multiplayer.New(game.Opts.Players)
 	go multiplayer.Handle(game.Wg)
 
-	board := board.New()
+	board := board.New(5, 5)
 	go board.Handle(game.Wg)
 
-	tick := tick.New()
-	go tick.Handle(game.Wg, game.Opts.Interval)
+	tick := tick.New(game.Opts.Interval)
+	go tick.Handle(game.Wg, board.BrickOperation)
 
 	terminal := terminal.New()
 	go terminal.Handle(game.Wg)

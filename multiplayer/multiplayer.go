@@ -1,4 +1,6 @@
-package main
+package multiplayer
+
+import "sync"
 
 type multiplayer struct {
 	Players        []*Player
@@ -6,18 +8,21 @@ type multiplayer struct {
 	PlayerEvent    chan *Player
 }
 
-func New() *multiplayer {
+func New(p int) *multiplayer {
 
-	players := make([]*Player, 0, Opts.Players)
+	players := make([]*Player, 0, p)
 	newPlayerEvent := make(chan *Player)
 	playerEvent := make(chan *Player)
 
-	multiplayer = Multiplayer(players, newPlayerEvent, playerEvent)
-	return &multiplayer
+	m := multiplayer{players, newPlayerEvent, playerEvent}
+	return &m
 }
 
-func (multiplayer *multiplayer) Handle() {
+func (multiplayer *multiplayer) AddPlayer(nick, host string) {
+	multiplayer.Players = append(multiplayer.Players, newPlayer(nick, host))
+}
 
-	defer Wg.Done()
-	multiplayer.Players = append(Players, newPlayer())
+func (multiplayer *multiplayer) Handle(wg sync.WaitGroup) {
+
+	defer wg.Done()
 }
