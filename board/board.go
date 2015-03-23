@@ -1,21 +1,19 @@
-package main
+package board
 
 import (
 	"reflect"
 )
 
-var ()
-
-type Board struct {
+type board struct {
 	Matrix     BoardMatrix
 	Position   Position
 	Shadow     [10]bool
-	brick      *Brick
-	boardEvent chan Board
-	closeEvent chan bool
+	Brick      *Brick
+	BoardEvent chan Board
+	CloseEvent chan bool
 }
 
-func NewBoard(x, y int) *Board {
+func New(x, y int) *Board {
 
 	var board Board
 	board.Position = Position{X: x, Y: y}
@@ -34,12 +32,12 @@ func NewBoard(x, y int) *Board {
 	return &board
 }
 
-func (board *Board) Handle(player Player) {
+func (board *Board) Handle(wg sync.WaitGroup, player Player) {
 
-	defer Wg.Done()
+	defer wg.Done()
 
 	/* Create first brick */
-	board.BrickNext()
+	board.brickNext()
 
 	for {
 
@@ -48,7 +46,7 @@ func (board *Board) Handle(player Player) {
 			/* Player wants to modify brick - move, rotate, drop ... by reflection */
 			/* This also handles moving down bick on tick */
 			reflect.ValueOf(board).MethodByName(method).Call([]reflect.Value{})
-		case <-BoardClose:
+		case <-Close:
 			return
 		}
 

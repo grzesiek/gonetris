@@ -1,11 +1,11 @@
-package main
+package terminal
 
 import (
 	"fmt"
 	"github.com/nsf/termbox-go"
 )
 
-type Terminal struct {
+type terminal struct {
 	CloseEvent chan bool
 }
 
@@ -28,12 +28,12 @@ type Position struct {
 	Y int
 }
 
-func NewTerminal() *Terminal {
+func NewTerminal() *terminal {
 
 	closeEvent = make(chan bool)
-	terminal = Terminal{closeEvent}
+	t = terminal{closeEvent}
 
-	return &terminal
+	return &t
 }
 
 func init() {
@@ -46,7 +46,7 @@ func init() {
 	termbox.Sync()
 }
 
-func PrintText(value interface{}, p Position) {
+func (t *terminal) PrintText(value interface{}, p Position) {
 
 	text := fmt.Sprintf("%v", value)
 	for i, char := range text {
@@ -56,7 +56,7 @@ func PrintText(value interface{}, p Position) {
 
 /* TODO: those functions below should go to different structs */
 
-func (t *Terminal) drawBoardFrame(board Board) {
+func (t *terminal) drawBoardFrame(board Board) {
 
 	width, height := len(board.Matrix)*2, len(board.Matrix[0])
 	x, y := board.Position.X, board.Position.Y
@@ -75,7 +75,7 @@ func (t *Terminal) drawBoardFrame(board Board) {
 	}
 }
 
-func (t *Terminal) drawBoard(board Board) {
+func (t *terminal) drawBoard(board Board) {
 
 	for row, cells := range board.Matrix {
 		for col, cell := range cells {
@@ -86,7 +86,7 @@ func (t *Terminal) drawBoard(board Board) {
 	}
 }
 
-func (t *Terminal) drawBrickShadow(board Board) {
+func (t *terminal) drawBrickShadow(board Board) {
 
 	bottom_frame_x := board.Position.X
 	bottom_frame_y := board.Position.Y + len(board.Matrix[0])
@@ -104,7 +104,7 @@ func (t *Terminal) drawBrickShadow(board Board) {
 	}
 }
 
-func (terminal *Terminal) Handle(boardEvent, newBoardEvent chan Board) {
+func (terminal *terminal) Handle(boardEvent, newBoardEvent chan Board) {
 
 	defer Wg.Done()
 	defer fmt.Println("Bye bye !")
@@ -123,36 +123,5 @@ func (terminal *Terminal) Handle(boardEvent, newBoardEvent chan Board) {
 		}
 
 		termbox.Flush()
-	}
-}
-
-func (terminal *Terminal) HandleKeys(gameCloseEvent chan bool, brickOperationEvent chan string) {
-
-	defer Wg.Done()
-
-	for {
-		if event := termbox.PollEvent(); event.Type == termbox.EventKey {
-
-			switch event.Ch {
-			case 'p': /*	Pause  					 */
-			case 'q': /*	Quit						 */
-				gameCloseEvent <- true
-				return
-			case 'j': /*	Move brick left */
-				brickOperationEvent <- "BrickMoveLeft"
-			case 'l': /*	Move brick right */
-				brickOperationEvent <- "BrickMoveRight"
-			case 'k': /*  Rotate brick */
-				brickOperationEvent <- "BrickRotate"
-			case 'm': /*  Move down brick */
-				brickOperationEvent <- "BrickMoveDown"
-			}
-
-			switch event.Key {
-			case termbox.KeySpace: /*  Drop brick */
-				brickOperationEvent <- "BrickDrop"
-			}
-
-		}
 	}
 }

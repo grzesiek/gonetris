@@ -9,8 +9,8 @@ type Tick struct {
 	closeEvent chan bool
 }
 
-func NewTick() *Tick {
-	tickTime := time.Duration(Opts.Interval) * time.Millisecond
+func NewTick(interval int) *Tick {
+	tickTime := time.Duration(interval) * time.Millisecond
 	closeEvent := make(chan bool)
 
 	return &Tick{tickTime, closeEvent}
