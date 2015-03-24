@@ -1,14 +1,13 @@
-package main
+package terminal
 
 import (
 	"github.com/nsf/termbox-go"
+	"sync"
 )
 
-var ()
+func (terminal *Terminal) HandleKeys(wg *sync.WaitGroup, gameCloseEvent chan bool, brickOperationEvent chan string) {
 
-func HandleKeys() {
-
-	defer Wg.Done()
+	defer wg.Done()
 
 	for {
 		if event := termbox.PollEvent(); event.Type == termbox.EventKey {
@@ -16,21 +15,21 @@ func HandleKeys() {
 			switch event.Ch {
 			case 'p': /*	Pause  					 */
 			case 'q': /*	Quit						 */
-				GameClose <- true
+				gameCloseEvent <- true
 				return
 			case 'j': /*	Move brick left */
-				BoardBrickOperation <- "BrickMoveLeft"
+				brickOperationEvent <- "BrickMoveLeft"
 			case 'l': /*	Move brick right */
-				BoardBrickOperation <- "BrickMoveRight"
+				brickOperationEvent <- "BrickMoveRight"
 			case 'k': /*  Rotate brick */
-				BoardBrickOperation <- "BrickRotate"
+				brickOperationEvent <- "BrickRotate"
 			case 'm': /*  Move down brick */
-				BoardBrickOperation <- "BrickMoveDown"
+				brickOperationEvent <- "BrickMoveDown"
 			}
 
 			switch event.Key {
 			case termbox.KeySpace: /*  Drop brick */
-				BoardBrickOperation <- "BrickDrop"
+				brickOperationEvent <- "BrickDrop"
 			}
 
 		}

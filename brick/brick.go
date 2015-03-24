@@ -1,11 +1,12 @@
-package main
+package brick
+
+import "github.com/grzesiek/gonetris/terminal"
 
 type Brick struct {
 	Layout      [][]int
-	Color       Color
-	Board       *Board
+	Color       terminal.Color
+	Position    terminal.Position
 	Anchored    bool
-	Position    Position
 	StartOffset int
 }
 
@@ -16,7 +17,7 @@ var (
 func init() {
 
 	IBrick := Brick{
-		Color:       ColorBlue,
+		Color:       terminal.ColorBlue,
 		StartOffset: -1,
 		Layout: [][]int{
 			{0, 1, 0},
@@ -25,7 +26,7 @@ func init() {
 			{0, 1, 0}}}
 
 	JBrick := Brick{
-		Color:       ColorCyan,
+		Color:       terminal.ColorCyan,
 		StartOffset: -2,
 		Layout: [][]int{
 			{0, 1, 1},
@@ -33,7 +34,7 @@ func init() {
 			{0, 1, 0}}}
 
 	LBrick := Brick{
-		Color:       ColorYellow,
+		Color:       terminal.ColorYellow,
 		StartOffset: -2,
 		Layout: [][]int{
 			{0, 1, 0},
@@ -41,14 +42,14 @@ func init() {
 			{0, 1, 1}}}
 
 	OBrick := Brick{
-		Color:       ColorMagenta,
+		Color:       terminal.ColorMagenta,
 		StartOffset: -1,
 		Layout: [][]int{
 			{1, 1},
 			{1, 1}}}
 
 	SBrick := Brick{
-		Color:       ColorRed,
+		Color:       terminal.ColorRed,
 		StartOffset: -1,
 		Layout: [][]int{
 			{1, 0},
@@ -56,7 +57,7 @@ func init() {
 			{0, 1}}}
 
 	TBrick := Brick{
-		Color:       ColorWhite,
+		Color:       terminal.ColorWhite,
 		StartOffset: -2,
 		Layout: [][]int{
 			{0, 1, 0},
@@ -64,7 +65,7 @@ func init() {
 			{0, 1, 0}}}
 
 	ZBrick := Brick{
-		Color:       ColorGreen,
+		Color:       terminal.ColorGreen,
 		StartOffset: -1,
 		Layout: [][]int{
 			{0, 1},
@@ -124,7 +125,4 @@ func (brick *Brick) RotationLayout() [][]int {
 func (brick *Brick) Rotate() {
 
 	brick.Layout = brick.RotationLayout()
-}
-
-func (brick *Brick) Drop() {
 }

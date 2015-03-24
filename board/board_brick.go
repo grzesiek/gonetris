@@ -1,11 +1,27 @@
-package main
+package board
 
 import (
 	"math/rand"
 	"time"
+
+	"github.com/grzesiek/gonetris/brick"
+	"github.com/grzesiek/gonetris/terminal"
 )
 
-func (board *Board) BrickDraw() {
+type brickBlocker uint16
+
+const (
+	BorderLeft brickBlocker = 1 << iota
+	BorderRight
+	BorderTop
+	BorderBottom
+	BrickAtLeft
+	BrickAtRight
+	BrickBelow
+	Something = 127
+)
+
+func (board *Board) brickDraw() {
 
 	brick := board.Brick
 	for bx, cells := range brick.Layout {
@@ -20,36 +36,36 @@ func (board *Board) BrickDraw() {
 
 }
 
-func (board *Board) BrickShadowDraw() {
+func (board *Board) brickSetShadow() {
 
 	brick := board.Brick
-	layout := brick.Layout
-	minX := len(layout)
-	maxX := 0
+	min := len(brick.Layout)
+	max := 0
 
-	for x, cells := range layout {
+	for x, cells := range brick.Layout {
 		for _, cell := range cells {
 			if cell == 1 {
-				if x < minX {
-					minX = x
+
+				if x < min {
+					min = x
 				}
 
-				if x > maxX {
-					maxX = x
+				if x > max {
+					max = x
 				}
 			}
 		}
 	}
 
-	minX += brick.Position.X
-	maxX += brick.Position.X
+	min += brick.Position.X
+	max += brick.Position.X
 
 	for x := range board.Shadow {
-		board.Shadow[x] = x >= minX && x <= maxX
+		board.Shadow[x] = x >= min && x <= max
 	}
 }
 
-func (board *Board) brickTouched(blocker BrickBlocker) bool {
+func (board *Board) brickTouched(blocker brickBlocker) bool {
 
 	brick := board.Brick
 	for bx, cells := range brick.Layout {
@@ -132,7 +148,7 @@ func (board *Board) brickCanRotate() bool {
 
 				/* Check if there is already embedded brick */
 				if board.Matrix[x][y].Embedded {
-					return false /* TODO: rotation bug */
+					return false /* TODO: rotation bug somewhere */
 				}
 
 			}
@@ -142,7 +158,7 @@ func (board *Board) brickCanRotate() bool {
 	return true
 }
 
-func (board *Board) FillWithBrick() {
+func (board *Board) fillWithBrick() {
 
 	brick := board.Brick
 	for bx, cells := range brick.Layout {
@@ -155,50 +171,30 @@ func (board *Board) FillWithBrick() {
 	}
 }
 
-func (board *Board) RemoveFullLines() int {
+func (board *Board) brickNext() *brick.Brick {
 
-	var lineFull bool
-	var removedLines []int
-
-	for by := 0; by < len(board.Matrix[0]); by++ {
-		lineFull = true
-		for bx := 0; bx < len(board.Matrix); bx++ {
-			lineFull = lineFull && board.Matrix[bx][by].Embedded
-		}
-
-		if lineFull {
-			for bx := 0; bx < len(board.Matrix); bx++ {
-				board.ResetCell(bx, by)
-			}
-			removedLines = append(removedLines, by)
-		}
-	}
-
-	if len(removedLines) > 0 {
-		for _, y := range removedLines {
-			for by := y - 1; by > 0; by-- {
-				for bx := 0; bx < len(board.Matrix); bx++ {
-					board.Matrix[bx][by+1] = board.Matrix[bx][by]
-					board.ResetCell(bx, by)
-				}
-			}
-		}
-	}
-
-	return len(removedLines)
-}
-
-func (board *Board) BrickNext() *Brick {
 	rand.Seed(time.Now().UTC().UnixNano())
-	newBrick := Bricks[rand.Intn(7)]
-	newBrick.Position = Position{4, newBrick.StartOffset - 1}
+	newBrick := brick.Bricks[rand.Intn(7)]
+	newBrick.Position = terminal.Position{4, newBrick.StartOffset - 1}
 	newBrick.Anchored = false
 
 	brick := &newBrick
 	board.Brick = brick
-	brick.Board = board
 
 	return brick
+}
+
+func (board *Board) needsNextBrick() bool {
+
+	/* Brick becomes anchored once it touches something below at the first time */
+	/* User can move birck one last time after it touches something */
+
+	touched := board.brickTouched(BorderBottom | BrickBelow)
+	anchored := board.Brick.Anchored
+	if touched {
+		board.Brick.Anchored = true
+	}
+	return touched && anchored
 }
 
 func (board *Board) BrickMoveLeft() {
@@ -234,17 +230,4 @@ func (board *Board) BrickDrop() {
 	for !board.brickTouched(BorderBottom | BrickBelow) {
 		board.BrickMoveDown()
 	}
-}
-
-func (board *Board) NeedsNextBrick() bool {
-
-	/* Brick becomes anchored once it touches something below at the first time */
-	/* User can move birck one last time after it touches something */
-
-	touched := board.brickTouched(BorderBottom | BrickBelow)
-	anchored := board.Brick.Anchored
-	if touched {
-		board.Brick.Anchored = true
-	}
-	return touched && anchored
 }
