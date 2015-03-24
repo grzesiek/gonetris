@@ -19,7 +19,7 @@ func New(interval int) *Tick {
 	return &Tick{tickTime, tickEvent, closeEvent}
 }
 
-func (tick *Tick) Handle(wg sync.WaitGroup) {
+func (tick *Tick) Handle(wg *sync.WaitGroup) {
 
 	defer wg.Done()
 

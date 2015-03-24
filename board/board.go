@@ -31,10 +31,10 @@ func New(x, y int) *Board {
 	return &board
 }
 
-func (board *Board) Handle(wg sync.WaitGroup, tick *tick.Tick, terminal *terminal.Terminal) {
+func (board *Board) Handle(wg *sync.WaitGroup, tick *tick.Tick, terminal *terminal.Terminal) {
 
 	defer wg.Done()
-	terminal.NewDrawableEvent <- board
+	terminal.NewDrawableEvent <- *board
 
 	/* Create first brick */
 	board.brickNext()

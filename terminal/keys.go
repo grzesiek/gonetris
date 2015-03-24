@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-func (terminal *Terminal) HandleKeys(wg sync.WaitGroup, gameCloseEvent chan bool, brickOperationEvent chan string) {
+func (terminal *Terminal) HandleKeys(wg *sync.WaitGroup, gameCloseEvent chan bool, brickOperationEvent chan string) {
 
 	defer wg.Done()
 

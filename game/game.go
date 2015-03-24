@@ -19,14 +19,15 @@ type opts struct {
 }
 
 type game struct {
-	Wg         sync.WaitGroup
+	Wg         *sync.WaitGroup
 	Opts       opts
 	CloseEvent chan bool
 }
 
 func NewGame() *game {
 
-	g := game{CloseEvent: make(chan bool)}
+	var wg sync.WaitGroup
+	g := game{Wg: &wg, CloseEvent: make(chan bool)}
 
 	_, err := flags.Parse(&g.Opts)
 	if err != nil {
@@ -41,24 +42,22 @@ func (game *game) Play() {
 
 	game.Wg.Add(5)
 
-	tick := tick.New(game.Opts.Interval)
-	go tick.Handle(game.Wg)
-
 	multiplayer := multiplayer.New(game.Opts.Players)
 	go multiplayer.Handle(game.Wg)
-
 	player := multiplayer.AddPlayer(game.Opts.Nickname, "", 5, 5)
-	board := player.Board
 
 	terminal := terminal.New()
 	go terminal.Handle(game.Wg)
-	go terminal.HandleKeys(game.Wg, game.CloseEvent, board.BrickOperationEvent)
+	go terminal.HandleKeys(game.Wg, game.CloseEvent, player.Board.BrickOperationEvent)
 
-	go board.Handle(game.Wg, tick, terminal)
+	tick := tick.New(game.Opts.Interval)
+	go tick.Handle(game.Wg)
+
+	go player.Board.Handle(game.Wg, tick, terminal)
 
 	<-game.CloseEvent
+	player.Board.CloseEvent <- true
 	terminal.CloseEvent <- true
-	board.CloseEvent <- true
 	tick.CloseEvent <- true
 
 	game.Wg.Wait()

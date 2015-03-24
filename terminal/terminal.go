@@ -66,7 +66,7 @@ func SetCell(x, y int, char rune, fg, bg Color) {
 	termbox.SetCell(x, y, char, termbox.Attribute(fg), termbox.Attribute(bg))
 }
 
-func (terminal *Terminal) Handle(wg sync.WaitGroup) {
+func (terminal *Terminal) Handle(wg *sync.WaitGroup) {
 
 	defer wg.Done()
 	defer fmt.Println("Bye bye !")

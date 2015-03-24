@@ -1,6 +1,8 @@
 package multiplayer
 
-import "sync"
+import (
+	"sync"
+)
 
 type multiplayer struct {
 	Players        []*Player
@@ -26,7 +28,7 @@ func (multiplayer *multiplayer) AddPlayer(nick, host string, x, y int) *Player {
 	return player
 }
 
-func (multiplayer *multiplayer) Handle(wg sync.WaitGroup) {
+func (multiplayer *multiplayer) Handle(wg *sync.WaitGroup) {
 
 	/* multiplayer TODO */
 	defer wg.Done()
