@@ -6,45 +6,35 @@ import (
 
 	"github.com/grzesiek/gonetris/brick"
 	"github.com/grzesiek/gonetris/terminal"
+	"github.com/grzesiek/gonetris/tick"
 )
 
-type position struct {
-	X, Y int
-}
-type board struct {
-	Matrix         matrix
-	Shadow         [10]bool
-	Brick          *brick.Brick
-	DrawEvent      chan terminal.Drawable
-	CloseEvent     chan bool
-	BrickOperation chan string
-	X              int
-	Y              int
+type Board struct {
+	Matrix              matrix
+	Shadow              [10]bool
+	Brick               *brick.Brick
+	CloseEvent          chan bool
+	BrickOperationEvent chan string
+	X                   int
+	Y                   int
 }
 
-func New(x, y int) *board {
+func New(x, y int) *Board {
 
-	var board board
+	var board Board
 	board.X = x
 	board.Y = y
 	board.Matrix = newMatrix()
-	board.DrawEvent = make(chan terminal.Drawable)
 	board.CloseEvent = make(chan bool)
-
-	/* TODO: this should go to Brick or be changed in other way
-	boardBrickOperation = make(chan string)
-	*/
-
-	/* TODO: This shoudln't be needed anymore
-	TerminalNewboardEvent <- board
-	*/
+	board.BrickOperationEvent = make(chan string)
 
 	return &board
 }
 
-func (board *board) Handle(wg sync.WaitGroup) {
+func (board *Board) Handle(wg sync.WaitGroup, tick *tick.Tick, terminal *terminal.Terminal) {
 
 	defer wg.Done()
+	terminal.NewDrawableEvent <- board
 
 	/* Create first brick */
 	board.brickNext()
@@ -52,10 +42,11 @@ func (board *board) Handle(wg sync.WaitGroup) {
 	for {
 
 		select {
-		case method := <-board.BrickOperation:
+		case method := <-board.BrickOperationEvent:
 			/* Player wants to modify brick - move, rotate, drop ... by reflection */
-			/* This also handles moving down bick on tick */
 			reflect.ValueOf(board).MethodByName(method).Call([]reflect.Value{})
+		case <-tick.TickEvent:
+			board.BrickMoveDown()
 		case <-board.CloseEvent:
 			return
 		}
@@ -79,6 +70,6 @@ func (board *board) Handle(wg sync.WaitGroup) {
 		}
 
 		/* emit boardEvent */
-		board.DrawEvent <- *board
+		terminal.DrawEvent <- *board
 	}
 }

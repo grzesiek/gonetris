@@ -4,6 +4,6 @@ import "github.com/grzesiek/gonetris/game"
 
 func main() {
 
-	game := NewGame()
-	game.Handle()
+	gonetris := game.NewGame()
+	gonetris.Play()
 }

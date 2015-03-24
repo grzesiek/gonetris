@@ -7,17 +7,19 @@ import (
 
 type Tick struct {
 	Time       time.Duration
+	TickEvent  chan bool
 	CloseEvent chan bool
 }
 
 func New(interval int) *Tick {
 	tickTime := time.Duration(interval) * time.Millisecond
 	closeEvent := make(chan bool)
+	tickEvent := make(chan bool)
 
-	return &Tick{tickTime, closeEvent}
+	return &Tick{tickTime, tickEvent, closeEvent}
 }
 
-func (tick *Tick) Handle(wg sync.WaitGroup, brickOperationEvent chan string) {
+func (tick *Tick) Handle(wg sync.WaitGroup) {
 
 	defer wg.Done()
 
@@ -26,7 +28,7 @@ func (tick *Tick) Handle(wg sync.WaitGroup, brickOperationEvent chan string) {
 		case <-tick.CloseEvent:
 			return
 		default:
-			brickOperationEvent <- "BrickMoveDown"
+			tick.TickEvent <- true
 			time.Sleep(tick.Time)
 		}
 	}

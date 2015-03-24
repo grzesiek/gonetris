@@ -18,11 +18,16 @@ func New(p int) *multiplayer {
 	return &m
 }
 
-func (multiplayer *multiplayer) AddPlayer(nick, host string) {
-	multiplayer.Players = append(multiplayer.Players, newPlayer(nick, host))
+func (multiplayer *multiplayer) AddPlayer(nick, host string, x, y int) *Player {
+
+	player := newPlayer(nick, host, x, y)
+	multiplayer.Players = append(multiplayer.Players, player)
+
+	return player
 }
 
 func (multiplayer *multiplayer) Handle(wg sync.WaitGroup) {
 
+	/* multiplayer TODO */
 	defer wg.Done()
 }

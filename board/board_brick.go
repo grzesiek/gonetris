@@ -21,7 +21,7 @@ const (
 	Something = 127
 )
 
-func (board *board) brickDraw() {
+func (board *Board) brickDraw() {
 
 	brick := board.Brick
 	for bx, cells := range brick.Layout {
@@ -36,7 +36,7 @@ func (board *board) brickDraw() {
 
 }
 
-func (board *board) brickSetShadow() {
+func (board *Board) brickSetShadow() {
 
 	brick := board.Brick
 	min := len(brick.Layout)
@@ -65,7 +65,7 @@ func (board *board) brickSetShadow() {
 	}
 }
 
-func (board *board) brickTouched(blocker brickBlocker) bool {
+func (board *Board) brickTouched(blocker brickBlocker) bool {
 
 	brick := board.Brick
 	for bx, cells := range brick.Layout {
@@ -118,7 +118,7 @@ func (board *board) brickTouched(blocker brickBlocker) bool {
 	return false
 }
 
-func (board *board) brickCanRotate() bool {
+func (board *Board) brickCanRotate() bool {
 
 	if !board.brickTouched(Something) {
 		return true
@@ -158,7 +158,7 @@ func (board *board) brickCanRotate() bool {
 	return true
 }
 
-func (board *board) fillWithBrick() {
+func (board *Board) fillWithBrick() {
 
 	brick := board.Brick
 	for bx, cells := range brick.Layout {
@@ -171,7 +171,7 @@ func (board *board) fillWithBrick() {
 	}
 }
 
-func (board *board) brickNext() *brick.Brick {
+func (board *Board) brickNext() *brick.Brick {
 
 	rand.Seed(time.Now().UTC().UnixNano())
 	newBrick := brick.Bricks[rand.Intn(7)]
@@ -184,42 +184,7 @@ func (board *board) brickNext() *brick.Brick {
 	return brick
 }
 
-func (board *board) brickMoveLeft() {
-
-	if !board.brickTouched(BorderLeft | BrickAtLeft) {
-		board.Brick.MoveLeft()
-	}
-}
-
-func (board *board) brickMoveRight() {
-
-	if !board.brickTouched(BorderRight | BrickAtRight) {
-		board.Brick.MoveRight()
-	}
-}
-
-func (board *board) brickMoveDown() {
-
-	if !board.brickTouched(BorderBottom | BrickBelow) {
-		board.Brick.MoveDown()
-	}
-}
-
-func (board *board) brickRotate() {
-
-	if board.brickCanRotate() {
-		board.Brick.Rotate()
-	}
-}
-
-func (board *board) brickDrop() {
-
-	for !board.brickTouched(BorderBottom | BrickBelow) {
-		board.brickMoveDown()
-	}
-}
-
-func (board *board) needsNextBrick() bool {
+func (board *Board) needsNextBrick() bool {
 
 	/* Brick becomes anchored once it touches something below at the first time */
 	/* User can move birck one last time after it touches something */
@@ -230,4 +195,39 @@ func (board *board) needsNextBrick() bool {
 		board.Brick.Anchored = true
 	}
 	return touched && anchored
+}
+
+func (board *Board) BrickMoveLeft() {
+
+	if !board.brickTouched(BorderLeft | BrickAtLeft) {
+		board.Brick.MoveLeft()
+	}
+}
+
+func (board *Board) BrickMoveRight() {
+
+	if !board.brickTouched(BorderRight | BrickAtRight) {
+		board.Brick.MoveRight()
+	}
+}
+
+func (board *Board) BrickMoveDown() {
+
+	if !board.brickTouched(BorderBottom | BrickBelow) {
+		board.Brick.MoveDown()
+	}
+}
+
+func (board *Board) BrickRotate() {
+
+	if board.brickCanRotate() {
+		board.Brick.Rotate()
+	}
+}
+
+func (board *Board) BrickDrop() {
+
+	for !board.brickTouched(BorderBottom | BrickBelow) {
+		board.BrickMoveDown()
+	}
 }

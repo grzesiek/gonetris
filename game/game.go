@@ -7,14 +7,13 @@ import (
 
 	"github.com/jessevdk/go-flags"
 
-	"github.com/grzesiek/gonetris/board"
 	"github.com/grzesiek/gonetris/multiplayer"
 	"github.com/grzesiek/gonetris/terminal"
 	"github.com/grzesiek/gonetris/tick"
 )
 
 type opts struct {
-	Name     string `short:"n" long:"nick" description:"Your nickname in game" required:"true"`
+	Nickname string `short:"n" long:"nick" description:"Your nickname in game" required:"true"`
 	Players  int    `short:"p" long:"players" description:"Number of players" required:"true"`
 	Interval int    `short:"i" long:"interval" description:"Step-down interval in miliseconds" required:"false" default:"400"`
 }
@@ -38,22 +37,24 @@ func NewGame() *game {
 	return &g
 }
 
-func (game *game) Handle() {
+func (game *game) Play() {
 
 	game.Wg.Add(5)
+
+	tick := tick.New(game.Opts.Interval)
+	go tick.Handle(game.Wg)
 
 	multiplayer := multiplayer.New(game.Opts.Players)
 	go multiplayer.Handle(game.Wg)
 
-	board := board.New(5, 5)
-	go board.Handle(game.Wg)
-
-	tick := tick.New(game.Opts.Interval)
-	go tick.Handle(game.Wg, board.BrickOperation)
+	player := multiplayer.AddPlayer(game.Opts.Nickname, "", 5, 5)
+	board := player.Board
 
 	terminal := terminal.New()
 	go terminal.Handle(game.Wg)
-	go terminal.HandleKeys(game.Wg)
+	go terminal.HandleKeys(game.Wg, game.CloseEvent, board.BrickOperationEvent)
+
+	go board.Handle(game.Wg, tick, terminal)
 
 	<-game.CloseEvent
 	terminal.CloseEvent <- true

@@ -31,11 +31,13 @@ type Position struct {
 	Y int
 }
 
-type terminal struct {
-	CloseEvent chan bool
+type Terminal struct {
+	NewDrawableEvent chan Drawable
+	DrawEvent        chan Drawable
+	CloseEvent       chan bool
 }
 
-func New() *terminal {
+func New() *Terminal {
 
 	termbox.Init()
 
@@ -44,10 +46,12 @@ func New() *terminal {
 	termbox.SetOutputMode(termbox.OutputNormal)
 	termbox.Sync()
 
+	newDrawableEvent := make(chan Drawable)
+	drawEvent := make(chan Drawable)
 	closeEvent := make(chan bool)
-	t := terminal{closeEvent}
+	terminal := &Terminal{newDrawableEvent, drawEvent, closeEvent}
 
-	return &t
+	return terminal
 }
 
 func PrintText(value interface{}, p Position) {
@@ -62,7 +66,7 @@ func SetCell(x, y int, char rune, fg, bg Color) {
 	termbox.SetCell(x, y, char, termbox.Attribute(fg), termbox.Attribute(bg))
 }
 
-func (terminal *terminal) Handle(wg sync.WaitGroup, drawEvent, newDrawableEvent chan Drawable) {
+func (terminal *Terminal) Handle(wg sync.WaitGroup) {
 
 	defer wg.Done()
 	defer fmt.Println("Bye bye !")
@@ -70,9 +74,9 @@ func (terminal *terminal) Handle(wg sync.WaitGroup, drawEvent, newDrawableEvent 
 
 	for {
 		select {
-		case drawable := <-newDrawableEvent:
+		case drawable := <-terminal.NewDrawableEvent:
 			drawable.DrawFrame()
-		case drawable := <-drawEvent:
+		case drawable := <-terminal.DrawEvent:
 			drawable.Draw()
 			drawable.DrawShadow()
 		case <-terminal.CloseEvent:

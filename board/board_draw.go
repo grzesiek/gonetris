@@ -4,7 +4,7 @@ import (
 	"github.com/grzesiek/gonetris/terminal"
 )
 
-func (board board) DrawFrame() {
+func (board Board) DrawFrame() {
 
 	width, height := len(board.Matrix)*2, len(board.Matrix[0])
 	x, y := board.X, board.Y
@@ -23,7 +23,7 @@ func (board board) DrawFrame() {
 	}
 }
 
-func (board board) Draw() {
+func (board Board) Draw() {
 
 	for row, cells := range board.Matrix {
 		for col, cell := range cells {
@@ -34,7 +34,7 @@ func (board board) Draw() {
 	}
 }
 
-func (board board) DrawShadow() {
+func (board Board) DrawShadow() {
 
 	bottom_frame_x := board.X
 	bottom_frame_y := board.Y + len(board.Matrix[0])
